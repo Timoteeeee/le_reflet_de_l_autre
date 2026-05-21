@@ -23,6 +23,7 @@ loadSprite('ville_1', 'assets/ville_1.png');
 loadSprite('accueil', 'assets/fond_accueil.png');
 loadSprite('garage', 'assets/garage.png');
 loadSprite('prison', 'assets/prison.png');
+loadSprite('hopital_couloir', 'assets/hopital_couloir.png');
 
 // load interface
 loadSprite('point_quete', 'assets/point_quete.png');
@@ -126,6 +127,9 @@ loadSprite('garage_balais', 'assets/garage_balais.png');
 loadSprite('prison_meuble_1', 'assets/prison_meuble_1.png');
 loadSprite('prison_meuble_2', 'assets/prison_meuble_2.png');
 
+// load decors hopital
+loadSprite('hopital_layer', 'assets/hopital_layer.png');
+loadSprite('hopital_porte', 'assets/hopital_porte.png');
 
 // load sounds
 loadSound('bruit_pas', 'sounds/bruits_pas.mp3');
@@ -536,7 +540,7 @@ function ftc_text_near(player, msg, speaker, tag) {
     destroyCurrentMessages()
     let currentText = "";
     let index = 0;
-    if(msg === "Appuyer sur 'E' pour intéragir" || msg === "Appuyer sur 'ESPACE' en poussant pour tirer" || msg === "Appuyer sur 'E' pour prendre") {
+    if(msg === "'E' intéragir" || msg === "'ESPACE' en poussant pour tirer" || msg === "'E' prendre" || msg === "'E' entrer") {
         currentText = msg;
     }
 
@@ -560,7 +564,7 @@ function ftc_text_near(player, msg, speaker, tag) {
     message1.z = 200
     message2.z = 200
 // animation texte interaction
-    if(msg === "Appuyer sur 'E' pour intéragir" || msg === "Appuyer sur 'ESPACE' en poussant pour tirer" || msg === "Appuyer sur 'E' pour prendre") {
+    if(msg === "'E' intéragir" || msg === "'ESPACE' en poussant pour tirer" || msg === "'E' prendre" || msg === "'E' entrer") {
         message1.animate("pos", [vec2(0,0), vec2(0,-1.7)], {
             duration: 0.8,
             direction: "ping-pong",
@@ -587,7 +591,7 @@ function ftc_text_near(player, msg, speaker, tag) {
     currentTag = tag
 
 // animation texte dialogue
-    if(msg != "Appuyer sur 'E' pour intéragir" && msg != "Appuyer sur 'ESPACE' en poussant pour tirer" && msg != "Appuyer sur 'E' pour prendre") {
+    if(msg != "'E' intéragir" && msg != "'ESPACE' en poussant pour tirer" && msg != "'E' prendre" && msg != "'E' entrer") {
         const stopLoop = loop(0.03, () => {
             if (index < msg.length) {
                 onKeyPress('space', () => {
@@ -1190,14 +1194,14 @@ scene("foret_1",()=>{
             if(point_quete_boule){
                 point_quete.opacity = 0
             }
-            ftc_text_near(ELIE, "Appuyer sur 'E' pour intéragir", mela, "mela")
+            ftc_text_near(ELIE, "'E' intéragir", mela, "mela")
             dialogueStage = 1
         }
     })
 
     ELIE.onCollide("melo", (melo) => {
         if (!near) {
-            ftc_text_near(ELIE, "Appuyer sur 'E' pour intéragir", melo, "melo")
+            ftc_text_near(ELIE, "'E' intéragir", melo, "melo")
             dialogueStage = 1
         }
     })
@@ -1242,7 +1246,7 @@ scene("foret_1",()=>{
 
     ELIE.onCollide("boules_de_jonglage", (boules_de_jonglage) => {
         if (!near) {
-            ftc_text_near(ELIE, "Appuyer sur 'E' pour prendre", boules_de_jonglage, "boules_de_jonglage")
+            ftc_text_near(ELIE, "'E' prendre", boules_de_jonglage, "boules_de_jonglage")
             dialogueStage = 1
         }
     })
@@ -1257,7 +1261,7 @@ scene("foret_1",()=>{
 
     ELIE.onCollide("velo", (velo) => {
         if (!near) {
-            ftc_text_near(ELIE, "Appuyer sur 'E' pour intéragir", velo, "velo")
+            ftc_text_near(ELIE, "'E' intéragir", velo, "velo")
             dialogueStage = 1
         }
     })
@@ -1317,7 +1321,7 @@ scene("foret_1",()=>{
                 return
             }
             if (near && dialogueStage === 3 && currentSpeaker === MELA && !quete_boule) {
-                ftc_text_near(ELIE, "Appuyer sur 'E' pour intéragir", MELA, "mela")
+                ftc_text_near(ELIE, "'E' intéragir", MELA, "mela")
                 dialogueStage = 1
                 return
             }
@@ -1335,7 +1339,7 @@ scene("foret_1",()=>{
                 return
             }
             if (near && dialogueStage === 2 && currentSpeaker === MELA  && quete_boule) {
-                ftc_text_near(ELIE, "Appuyer sur 'E' pour intéragir", MELA, "mela")
+                ftc_text_near(ELIE, "'E' intéragir", MELA, "mela")
                 dialogueStage = 1
             }
 
@@ -1376,7 +1380,7 @@ scene("foret_1",()=>{
                 return
             }
             if (near && dialogueStage === 5 && currentSpeaker === MELO && quete_boule_1) {
-                ftc_text_near(ELIE, "Appuyer sur 'E' pour intéragir", MELO, "melo")
+                ftc_text_near(ELIE, "'E' intéragir", MELO, "melo")
                 dialogueStage = 1
             }
         }
@@ -2358,7 +2362,7 @@ scene("terrain_foot",()=>{
 
     ELIE.onCollide("oscar", (oscar) => {
         if (!near) {
-            ftc_text_near(ELIE, "Appuyer sur 'E' pour intéragir", oscar, "oscar")
+            ftc_text_near(ELIE, "'E' intéragir", oscar, "oscar")
             dialogueStage = 1
         }
     })
@@ -2411,7 +2415,7 @@ scene("terrain_foot",()=>{
         }
 
         if (near && dialogueStage === 3 && currentSpeaker === OSCAR && quete_boule_2 && partie_foot) {
-            ftc_text_near(ELIE, "Appuyer sur 'E' pour intéragir", OSCAR, "oscar")
+            ftc_text_near(ELIE, "'E' intéragir", OSCAR, "oscar")
             dialogueStage = 1
             return
         }
@@ -2429,7 +2433,7 @@ scene("terrain_foot",()=>{
         nearball = true
         if(!tuto_ballon){
             if(!near){
-                ftc_text_near(ELIE, "Appuyer sur 'ESPACE' en poussant pour tirer", ballon, "ballon_foot")
+                ftc_text_near(ELIE, "'ESPACE' en poussant pour tirer", ballon, "ballon_foot")
                 dialogueStage = 1
             }
         }
@@ -3001,7 +3005,7 @@ scene("partie_foot",()=>{
         nearball = true
         if(!tuto_ballon){
             if(!near){
-                ftc_text_near(ELIE, "Appuyer sur 'ESPACE' en poussant pour tirer", ballon, "ballon_foot")
+                ftc_text_near(ELIE, "'ESPACE' en poussant pour tirer", ballon, "ballon_foot")
                 dialogueStage = 1
             }
         }
@@ -3129,6 +3133,11 @@ scene("ville_1",()=>{
     if(zone_arrivee === "prison"){
         ELIE.pos.x = 33
         ELIE.pos.y = 109
+    }
+
+    if(zone_arrivee === "hopital"){
+        ELIE.pos.x = 120
+        ELIE.pos.y = 46
     }
 
     ELIE.play("idle_side")
@@ -3503,7 +3512,7 @@ scene("ville_1",()=>{
 // COLLISION
     ELIE.onCollide("velo", (velo) => {
         if (!near) {
-            ftc_text_near(ELIE, "Appuyer sur 'E' pour intéragir", velo, "velo")
+            ftc_text_near(ELIE, "'E' intéragir", velo, "velo")
             dialogueStage = 1
         }
     })
@@ -4185,7 +4194,471 @@ scene("garage",()=>{
 
 scene("hopital",()=>{
 
+        add([
+        sprite('hopital_couloir'),
+    ]);
+
+    // INITIALISATION ET MOUVEMENTS ELIE
+    const ELIE = add([
+        sprite(apparence),
+        pos(8,59),
+        anchor("bot"),
+        area({
+            shape: new Rect(vec2(0, 0), 8, 2)
+        }),
+        body(),
+        'elie'
+    ]);
+
+    ELIE.play("idle_side")
+    ELIE.flipX = true
+ 
+// mouvements
+    onKeyDown("right", () => {
+        if(!velo_monte){
+            ELIE.move(25, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = true;
+                ELIE.play("walk_side");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(40, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = true;
+                ELIE.velo_utilise.flipX = false;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+    });
+
+    onKeyRelease("right", ()=>{
+        if(!velo_monte){
+            ELIE.play("idle_side")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    })
+
+    onKeyDown("down", () => {
+        if(!velo_monte){
+            ELIE.move(0, 25);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = false;
+                ELIE.play("walk_front");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(0, 40);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = false;
+                ELIE.velo_utilise.flipX = true;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+    });
+
+    onKeyRelease("down", ()=>{
+        if(!velo_monte){
+            ELIE.play("idle_front")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    })
+
+    onKeyDown("up", () => {
+        if(!velo_monte){
+            ELIE.move(0, -25);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = true;
+                ELIE.play("walk_behind");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(0, -40);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = true;
+                ELIE.velo_utilise.flipX = false;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+    });
+
+    onKeyRelease("up", ()=>{
+        if(!velo_monte){
+            ELIE.play("idle_behind")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    })
+
+    onKeyDown("left", () => {
+        if(!velo_monte){
+            ELIE.move(-25, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = false;
+                ELIE.play("walk_side");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(-40, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = false;
+                ELIE.velo_utilise.flipX = true;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+    });
+
+    onKeyRelease("left", ()=>{
+        if(!velo_monte){
+            ELIE.play("idle_side")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    })
+
+    onKeyDown("d", () => {
+        if(!velo_monte){
+            ELIE.move(25, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = true;
+                ELIE.play("walk_side");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(40, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = true;
+                ELIE.velo_utilise.flipX = false;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+    });
+
+    onKeyRelease("d", ()=>{
+        if(!velo_monte){
+            ELIE.play("idle_side")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    })
+
+    onKeyDown("s", () => {
+        if(!velo_monte){
+            ELIE.move(0, 25);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = false;
+                ELIE.play("walk_front");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(0, 40);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = false;
+                ELIE.velo_utilise.flipX = true;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+    });
+
+    onKeyRelease("s", ()=>{
+        if(!velo_monte){
+            ELIE.play("idle_front")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    })
+
+    onKeyDown("w", () => {
+        if(!velo_monte){
+            ELIE.move(0, -25);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = true;
+                ELIE.play("walk_behind");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(0, -40);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = true;
+                ELIE.velo_utilise.flipX = false;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+    });
+
+    onKeyRelease("w", ()=>{
+        if(!velo_monte){
+            ELIE.play("idle_behind")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    })
+
+    onKeyDown("a", () => {
+        if(!velo_monte){
+            ELIE.move(-25, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = false;
+                ELIE.play("walk_side");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(-40, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = false;
+                ELIE.velo_utilise.flipX = true;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+    });
+
+    onKeyRelease("a", ()=>{
+        if(!velo_monte){
+            ELIE.play("idle_side")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    })
+
+// coup de pied
+    onKeyPress("space", () => {
+        if(!near){
+            if(ELIE.curAnim() === "walk_side"){
+                ELIE.play("kick_side")
+            }
+            if(ELIE.curAnim() === "walk_front"){
+                ELIE.play("kick_front")
+            }
+            if(ELIE.curAnim() === "walk_behind"){
+                ELIE.play("kick_behind")
+            }
+        }
+
+        if(!nearball){
+            return
+        }
+
+        const dir = ballon_foot.pos.sub(ELIE.pos).unit()
+
+        const force = 100
+
+        ballon_foot.applyImpulse(dir.scale(force))
+
+        ballon_foot.play("bounce")
+
+        tuto_ballon = true    
+    })
+
+// sons de pas
+    pas.stop()
+
+    function isAnyMovementKeyDown() {
+        return isKeyDown("w") || isKeyDown("a") || isKeyDown("s") || isKeyDown("d") || isKeyDown("left") || isKeyDown("up") || isKeyDown("right") || isKeyDown("down");
+    }
+
+    onKeyDown("w", () => {
+        if(!bool_pas){
+            pas.play()
+            bool_pas = true
+        }
+    })
+
+    ELIE.onUpdate(() => {
+        if (!isAnyMovementKeyDown()) {
+            pas.stop()
+            bool_pas = false
+        }
+    })
+
+    onKeyDown("a", () => {
+        if(!bool_pas){
+            pas.play()
+            bool_pas = true
+        }
+    })
+
+    onKeyDown("s", () => {
+        if(!bool_pas){
+            pas.play()
+            bool_pas = true
+        }
+    })
+
+    onKeyDown("d", () => {
+        if(!bool_pas){
+            pas.play()
+            bool_pas = true
+        }
+    })
+
+    onKeyDown("left", () => {
+        if(!bool_pas){
+            pas.play()
+            bool_pas = true
+        }
+    })
+
+    onKeyDown("up", () => {
+        if(!bool_pas){
+            pas.play()
+            bool_pas = true
+        }
+    })
+
+    onKeyDown("right", () => {
+        if(!bool_pas){
+            pas.play()
+            bool_pas = true
+        }
+    })
+
+    onKeyDown("down", () => {
+        if(!bool_pas){
+            pas.play()
+            bool_pas = true
+        }
+    })
+
+    ELIE.onUpdate(() => {
+        ELIE.z = ELIE.pos.y
+    })
+
+
+// INTERACTION
+    onKeyPress("e", () => {
+        if (near && dialogueStage === 1 && currentSpeaker === zone_2) {
+            go("hopital_chambre")
+        }
+    })
+
+// INITIALISATION DECORS
+    // murs de la salle
+    const mur_droite = add([
+        rect(1, 108),
+        pos(192,0),
+        area(),
+        body({isStatic: true}),
+        opacity(0)
+    ])
+
+    const mur_bas_1 = add([
+        rect(192, 1),
+        pos(0,69),
+        area(),
+        body({isStatic: true}),
+        opacity(0)
+    ])
+
+    const mur_haut = add([
+        rect(192, 1),
+        pos(0,44),
+        area(),
+        body({isStatic: true}),
+        opacity(0)
+    ])
+
+    const mur_porte = add([
+        rect(1, 20),
+        pos(188,30),
+        area(),
+        body({isStatic: true}),
+        opacity(0)
+    ])
+
+    // changement zone
+    const zone_1 = add([
+        rect(2, 24),
+        pos(0, 45),
+        "zone_1",
+        area(),
+        opacity(0)
+    ]);
+
+    const zone_2 = add([
+        rect(6, 1),
+        pos(181, 45),
+        "zone_2",
+        area(),
+        opacity(0)
+    ]);
+
+    const hopital_layer = add([
+        sprite("hopital_layer"),
+        pos(10,51),
+        area(),
+        z(500)
+    ])
+
+    // objets
+    const hopital_porte = add([
+        sprite("hopital_porte"),
+        pos(183,27),
+        area(),
+    ])
+    hopital_porte.z = hopital_porte.pos.y + 23
+
+// COLLISIONS
+    // changement zone
+    ELIE.onCollide("zone_1", (zone_1) => {
+        pas.stop(),
+        zone_arrivee = "hopital",
+        go("ville_1")
+    })
+
+    ELIE.onCollide("zone_2", (zone_2) => {
+        if (!near) {
+            ftc_text_near(ELIE, "'E' entrer", zone_2, "zone_2")
+            dialogueStage = 1
+        }
+    })
+
+    ELIE.onCollideEnd("zone_2", () => {
+        destroyCurrentMessages()
+        near = false
+        dialogueStage = 0
+        currentSpeaker = null
+        currentTag = null
+    })
 })
+
+scene("hopital_chambre",()=>{
+
+})
+
 
 scene("prison",()=>{
 
@@ -4651,4 +5124,4 @@ scene("ecole",()=>{
 
 })
 
-go("prison")
+go("hopital")
