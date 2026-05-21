@@ -1,0 +1,75 @@
+#inventory{
+    position:fixed;
+    top:2%;
+    left:2%;
+    display:none;
+}
+
+.slot{
+    width:80px;
+    height:80px;
+
+    border:3px solid rgba(0, 0, 0, 0.678);
+    background:#00000056;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    margin:5px;
+
+    overflow:hidden;
+}
+
+.slot img{
+    width:48px;
+    height:48px;
+
+    image-rendering:pixelated;
+
+    display:block;
+}
+
+#overlay {
+  position: absolute;
+  inset: 0;
+
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  background: rgba(0,0,0,0.5);
+
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  z-index: 9995;
+}
+
+#message {
+  color: white;
+  font-family: journal;
+  font-size: 40px;
+
+  text-shadow: -2px 2px 0 black;
+}
+
+#promptBox {
+  color: white;
+
+  font-family: Arial;
+  font-size: 24px;
+
+  text-align: center;
+  display: none;
+
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  z-index: 9999;
+}
