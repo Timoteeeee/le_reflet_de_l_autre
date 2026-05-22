@@ -11,4 +11,5 @@ Liste de choses à faire:
 - Histoire/narration
     quête garagiste/papa
     quête apprendre vélo
+    quête école apprendre écrire viking
     
