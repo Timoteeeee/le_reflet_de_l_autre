@@ -3082,7 +3082,7 @@ scene("partie_foot",()=>{
     })
 
     // messages partie
-    message("Trois, deux, un, C'EST PARTI !", 3)
+    message("BONNE CHANCE !", 4)
 
     const score_1 = add([text(`${pseudo}: ${score_foot[0]} | Oscar: ${score_foot[1]}`, {
         font: "journal",
