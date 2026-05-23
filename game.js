@@ -142,6 +142,7 @@ loadSound('musique_1', 'sounds/game_music_project.mp3');
 loadSound('oiseau_son', 'sounds/oiseau_son.mp3');
 loadSound('son_defaite', 'sounds/son_defaite.mp3');
 loadSound('son_victoire', 'sounds/son_victoire.mp3');
+loadSound('son_ballon', 'sounds/son_ballon.mp3');
 
 // load personnages
 loadSprite('elie_1', 'assets/elie_1.png',{
@@ -419,7 +420,7 @@ let currentSlot = 0;
 
 function addItem(spritePath){
     if(!tuto_inventaire){
-        message("Appuyer sur 'I' pour afficher votre inventaire", 1)
+        message("Appuyer sur [I] pour afficher votre inventaire", 1)
     }
     tuto_inventaire = true
     const img = document.createElement("img");
@@ -545,7 +546,7 @@ function ftc_text_near(player, msg, speaker, tag) {
     destroyCurrentMessages()
     let currentText = "";
     let index = 0;
-    if(msg === "'E' intéragir" || msg === "'ESPACE' en poussant pour tirer" || msg === "'E' prendre" || msg === "'E' entrer") {
+    if(msg === "\\[E\\] intéragir" || msg === "\\[ESPACE\\] en poussant pour tirer" || msg === "\\[E\\] prendre" || msg === "\\[E\\] entrer") {
         currentText = msg;
     }
 
@@ -569,7 +570,7 @@ function ftc_text_near(player, msg, speaker, tag) {
     message1.z = 200
     message2.z = 200
 // animation texte interaction
-    if(msg === "'E' intéragir" || msg === "'ESPACE' en poussant pour tirer" || msg === "'E' prendre" || msg === "'E' entrer") {
+    if(msg === "\\[E\\] intéragir" || msg === "\\[ESPACE\\] en poussant pour tirer" || msg === "\\[E\\] prendre" || msg === "\\[E\\] entrer") {
         message1.animate("pos", [vec2(0,0), vec2(0,-1.7)], {
             duration: 0.8,
             direction: "ping-pong",
@@ -596,7 +597,7 @@ function ftc_text_near(player, msg, speaker, tag) {
     currentTag = tag
 
 // animation texte dialogue
-    if(msg != "'E' intéragir" && msg != "'ESPACE' en poussant pour tirer" && msg != "'E' prendre" && msg != "'E' entrer") {
+    if(msg != "\\[E\\] intéragir" && msg != "\\[ESPACE\\] en poussant pour tirer" && msg != "\\[E\\] prendre" && msg != "\\[E\\] entrer") {
         const stopLoop = loop(0.03, () => {
             if (index < msg.length) {
                 onKeyPress('space', () => {
@@ -626,6 +627,7 @@ let quete_boule_1 = false
 let quete_boule_2 = false
 let quete_boule_fin = false
 let partie_foot = false
+let cadeau_1 = false
 
 scene("accueil",()=>{
     add([
@@ -718,7 +720,7 @@ scene("choix",()=>{
     ]);
     message2.z = 500
 
-    const message3 = add([text("Utiliser 'A' 'D' pour choisir et 'E' pour confirmer", {
+    const message3 = add([text("Utiliser \\[A\\]\\[D\\] pour choisir et \\[E\\] pour confirmer", {
         font: "journal"
     }),
     pos(GAME_WIDTH/2, 94),
@@ -729,7 +731,7 @@ scene("choix",()=>{
     animate()
     ]);
     message3.z = 500
-    const message4 = add([text("Utiliser 'A' 'D' pour choisir et 'E' pour confirmer", {
+    const message4 = add([text("Utiliser \\[A\\]\\[D\\] pour choisir et \\[E\\] pour confirmer", {
         font: "journal"
     }),
     pos(message3.pos.x + 0.3, message3.pos.y - 0.3 ),
@@ -811,7 +813,7 @@ scene("foret_1",()=>{
 
     // message tuto
     if(!tuto_deplacement){
-        message("Utiliser 'W', 'A', 'S', 'D' pour vous déplacer", 1)
+        message("Utiliser [w][A][S][D] pour vous déplacer", 1)
         tuto_deplacement = true
     }
 
@@ -1199,14 +1201,14 @@ scene("foret_1",()=>{
             if(point_quete_boule){
                 point_quete.opacity = 0
             }
-            ftc_text_near(ELIE, "'E' intéragir", mela, "mela")
+            ftc_text_near(ELIE, "\\[E\\] intéragir", mela, "mela")
             dialogueStage = 1
         }
     })
 
     ELIE.onCollide("melo", (melo) => {
         if (!near) {
-            ftc_text_near(ELIE, "'E' intéragir", melo, "melo")
+            ftc_text_near(ELIE, "\\[E\\] intéragir", melo, "melo")
             dialogueStage = 1
         }
     })
@@ -1251,7 +1253,7 @@ scene("foret_1",()=>{
 
     ELIE.onCollide("boules_de_jonglage", (boules_de_jonglage) => {
         if (!near) {
-            ftc_text_near(ELIE, "'E' prendre", boules_de_jonglage, "boules_de_jonglage")
+            ftc_text_near(ELIE, "\\[E\\] prendre", boules_de_jonglage, "boules_de_jonglage")
             dialogueStage = 1
         }
     })
@@ -1266,7 +1268,7 @@ scene("foret_1",()=>{
 
     ELIE.onCollide("velo", (velo) => {
         if (!near) {
-            ftc_text_near(ELIE, "'E' intéragir", velo, "velo")
+            ftc_text_near(ELIE, "\\[E\\] intéragir", velo, "velo")
             dialogueStage = 1
         }
     })
@@ -1292,7 +1294,7 @@ scene("foret_1",()=>{
 
             //monter sur le velo
             if (near && dialogueStage === 1 && currentSpeaker === velo && !savoir_velo) {
-                message("Vous ne savez pas faire de vélo (version démo)",1)
+                message("Ce n'est pas votre vélo",1)
                 return
             }
 
@@ -1326,7 +1328,7 @@ scene("foret_1",()=>{
                 return
             }
             if (near && dialogueStage === 3 && currentSpeaker === MELA && !quete_boule) {
-                ftc_text_near(ELIE, "'E' intéragir", MELA, "mela")
+                ftc_text_near(ELIE, "\\[E\\] intéragir", MELA, "mela")
                 dialogueStage = 1
                 return
             }
@@ -1344,7 +1346,7 @@ scene("foret_1",()=>{
                 return
             }
             if (near && dialogueStage === 2 && currentSpeaker === MELA  && quete_boule) {
-                ftc_text_near(ELIE, "'E' intéragir", MELA, "mela")
+                ftc_text_near(ELIE, "\\[E\\] intéragir", MELA, "mela")
                 dialogueStage = 1
             }
 
@@ -1360,17 +1362,18 @@ scene("foret_1",()=>{
                 }
                 return
             }
-            if (near && dialogueStage === 1 && currentSpeaker === MELO && quete_boule_1) {
+            
+            if (near && dialogueStage === 1 && currentSpeaker === MELO && quete_boule_1 && !partie_foot) {
                 ftc_text_near(ELIE, "T'as aidé ma soeur. C'est cool.", currentSpeaker, currentTag)
                 dialogueStage = 2
                 return
             }
-            if (near && dialogueStage === 2 && currentSpeaker === MELO && quete_boule_1) {
+            if (near && dialogueStage === 2 && currentSpeaker === MELO && quete_boule_1 && !partie_foot) {
                 ftc_text_near(ELIE, "Pourquoi tu me regardes comme ça ? \nTu veux ma photo ?", currentSpeaker, currentTag)
                 dialogueStage = 3
                 return
             }
-            if (near && dialogueStage === 3 && currentSpeaker === MELO && quete_boule_1) {
+            if (near && dialogueStage === 3 && currentSpeaker === MELO && quete_boule_1 && !partie_foot) {
                 ftc_text_near(ELIE, "Elle a encore promis que je donnerais un jouet ? \nBon... si t'amènes ce ballon à mon pote, \npeut-être que je t'en donne un.", currentSpeaker, currentTag)
                 dialogueStage = 4
                 if(!quete_boule_2){
@@ -1379,13 +1382,43 @@ scene("foret_1",()=>{
                 quete_boule_2 = true
                 return
             }
-            if (near && dialogueStage === 4 && currentSpeaker === MELO && quete_boule_1) {
-                ftc_text_near(ELIE, "Il a un pull gris. Et pas de cheveux.", currentSpeaker, currentTag)
+            if (near && dialogueStage === 4 && currentSpeaker === MELO && quete_boule_1 && !partie_foot) {
+                ftc_text_near(ELIE, "Il est au terrain de foot, à l'ouest.", currentSpeaker, currentTag)
                 dialogueStage = 5
                 return
             }
-            if (near && dialogueStage === 5 && currentSpeaker === MELO && quete_boule_1) {
-                ftc_text_near(ELIE, "'E' intéragir", MELO, "melo")
+            if (near && dialogueStage === 5 && currentSpeaker === MELO && quete_boule_1 && !partie_foot) {
+                ftc_text_near(ELIE, "\\[E\\] intéragir", MELO, "melo")
+                dialogueStage = 1
+            }
+            
+            if (near && dialogueStage === 1 && currentSpeaker === MELO && partie_foot && !cadeau_1) {
+                ftc_text_near(ELIE, "Ahah, t'as la tête de quelqu'un\nqui vient de jouer contre Oscar.", currentSpeaker, currentTag)
+                dialogueStage = 2
+                return
+            }
+            if (near && dialogueStage === 2 && currentSpeaker === MELO && partie_foot && !cadeau_1) {
+                ftc_text_near(ELIE, "Je tiens mes promesses, tiens.", currentSpeaker, currentTag)
+                cadeau_1 = true
+                dialogueStage = 3
+                return
+            }
+            if (near && dialogueStage === 3 && currentSpeaker === MELO && partie_foot && !cadeau_1) {
+                ftc_text_near(ELIE, "\\[E\\] intéragir", MELO, "melo")
+                dialogueStage = 1
+            }
+            if (near && dialogueStage === 1 && currentSpeaker === MELO && partie_foot && cadeau_1) {
+                ftc_text_near(ELIE, "Salut. Mon vélo fait un bruit bizarre.", currentSpeaker, currentTag)
+                dialogueStage = 2
+                return
+            }
+            if (near && dialogueStage === 2 && currentSpeaker === MELO && partie_foot && cadeau_1) {
+                ftc_text_near(ELIE, "Ton père est mécano c'est ça ?\nTu peux aller lui montrer ma bécane ?", currentSpeaker, currentTag)
+                dialogueStage = 3
+                return
+            }
+            if (near && dialogueStage === 3 && currentSpeaker === MELO && partie_foot && cadeau_1) {
+                ftc_text_near(ELIE, "\\[E\\] intéragir", MELO, "melo")
                 dialogueStage = 1
             }
         }
@@ -2101,6 +2134,10 @@ scene("terrain_foot",()=>{
 
         ballon_foot.play("bounce")
 
+        const son_ballon = play("son_ballon", {
+            volume: 1
+        })
+
         tuto_ballon = true    
     })
 
@@ -2251,10 +2288,10 @@ scene("terrain_foot",()=>{
     ])
 
     const goal_gauche_hitbox2 = add([
-        pos(15, 69),
+        pos(13, 67),
         anchor("bot"),
         area({
-            shape: new Rect(vec2(-2, 0), 1, 25)
+            shape: new Rect(vec2(0, 0), 1, 23)
         }),
         body({isStatic: true}),
         "goalll"
@@ -2290,10 +2327,10 @@ scene("terrain_foot",()=>{
     ])
 
     const goal_droite_hitbox2 = add([
-        pos(178, 68),
+        pos(178, 67),
         anchor("bot"),
         area({
-            shape: new Rect(vec2(2, 0), 1, 25)
+            shape: new Rect(vec2(2, 0), 1, 23)
         }),
         body({isStatic: true}),
         "goalll"
@@ -2367,7 +2404,7 @@ scene("terrain_foot",()=>{
 
     ELIE.onCollide("oscar", (oscar) => {
         if (!near) {
-            ftc_text_near(ELIE, "'E' intéragir", oscar, "oscar")
+            ftc_text_near(ELIE, "\\[E\\] intéragir", oscar, "oscar")
             dialogueStage = 1
         }
     })
@@ -2420,7 +2457,7 @@ scene("terrain_foot",()=>{
         }
 
         if (near && dialogueStage === 3 && currentSpeaker === OSCAR && quete_boule_2 && partie_foot) {
-            ftc_text_near(ELIE, "'E' intéragir", OSCAR, "oscar")
+            ftc_text_near(ELIE, "\\[E\\] intéragir", OSCAR, "oscar")
             dialogueStage = 1
             return
         }
@@ -2438,7 +2475,7 @@ scene("terrain_foot",()=>{
         nearball = true
         if(!tuto_ballon){
             if(!near){
-                ftc_text_near(ELIE, "'ESPACE' en poussant pour tirer", ballon, "ballon_foot")
+                ftc_text_near(ELIE, "\\[ESPACE\\] en poussant pour tirer", ballon, "ballon_foot")
                 dialogueStage = 1
             }
         }
@@ -2457,12 +2494,21 @@ scene("terrain_foot",()=>{
 
     ballon_foot.onCollide("barriere_cote", () => {
         ballon_foot.vel.x = -ballon_foot.vel.x
+        const son_ballon = play("son_ballon", {
+            volume: 0.4
+        })
     })
     ballon_foot.onCollide("barriere_longueur", () => {
         ballon_foot.vel.y = -ballon_foot.vel.y
+        const son_ballon = play("son_ballon", {
+            volume: 0.4
+        })
     })
     ballon_foot.onCollide("goal", () => {
         ballon_foot.vel.x = -ballon_foot.vel.x
+        const son_ballon = play("son_ballon", {
+            volume: 0.4
+        })
     })
     ballon_foot.onCollide("goalll", () => {
         ballon_foot.vel.x = -ballon_foot.vel.x/5
@@ -2611,9 +2657,15 @@ scene("partie_foot",()=>{
 
         const dir = ballon_foot.pos.sub(ELIE.pos).unit()
 
-        const force = 70
+        const force = 100
 
         ballon_foot.vel = dir.scale(force)
+
+        const son_ballon = play("son_ballon", {
+            volume: 1
+        })
+
+        tuto_ballon = true   
 
         ballon_foot.play("bounce")
 
@@ -2754,8 +2806,7 @@ scene("partie_foot",()=>{
             anchor("center"),
             pos(0,-20)
     ])
-
-
+    
     const goal_gauche_hitbox1 = add([
         pos(15, 69),
         anchor("bot"),
@@ -2767,10 +2818,10 @@ scene("partie_foot",()=>{
     ])
 
     const goal_gauche_hitbox2 = add([
-        pos(15, 69),
+        pos(15, 67),
         anchor("bot"),
         area({
-            shape: new Rect(vec2(-2, 0), 1, 25)
+            shape: new Rect(vec2(-2, 0), 1, 23)
         }),
         body({isStatic: true}),
         "goalll_gauche"
@@ -2800,7 +2851,6 @@ scene("partie_foot",()=>{
             anchor("center"),
             pos(0,-20)
     ])
-    confettis_droite.flipX = true
 
     const goal_droite_hitbox1 = add([
         pos(178, 68),
@@ -2813,10 +2863,10 @@ scene("partie_foot",()=>{
     ])
 
     const goal_droite_hitbox2 = add([
-        pos(178, 68),
+        pos(178, 67),
         anchor("bot"),
         area({
-            shape: new Rect(vec2(2, 0), 1, 25)
+            shape: new Rect(vec2(2, 0), 1, 23)
         }),
         body({isStatic: true}),
         "goalll_droite"
@@ -3010,7 +3060,7 @@ scene("partie_foot",()=>{
         nearball = true
         if(!tuto_ballon){
             if(!near){
-                ftc_text_near(ELIE, "'ESPACE' en poussant pour tirer", ballon, "ballon_foot")
+                ftc_text_near(ELIE, "\\[ESPACE\\] en poussant pour tirer", ballon, "ballon_foot")
                 dialogueStage = 1
             }
         }
@@ -3029,12 +3079,21 @@ scene("partie_foot",()=>{
 
     ballon_foot.onCollide("barriere_cote", () => {
         ballon_foot.vel.x = -ballon_foot.vel.x
+        const son_ballon = play("son_ballon", {
+            volume: 0.4
+        })
     })
     ballon_foot.onCollide("barriere_longueur", () => {
         ballon_foot.vel.y = -ballon_foot.vel.y
+        const son_ballon = play("son_ballon", {
+            volume: 0.4
+        })
     })
     ballon_foot.onCollide("goal", () => {
         ballon_foot.vel.x = -ballon_foot.vel.x
+        const son_ballon = play("son_ballon", {
+            volume: 0.4
+        })
     })
     ballon_foot.onCollide("goalll_gauche", () => {
         ballon_foot.vel.x = -ballon_foot.vel.x/5
@@ -3517,7 +3576,7 @@ scene("ville_1",()=>{
 // COLLISION
     ELIE.onCollide("velo", (velo) => {
         if (!near) {
-            ftc_text_near(ELIE, "'E' intéragir", velo, "velo")
+            ftc_text_near(ELIE, "\\[E\\] intéragir", velo, "velo")
             dialogueStage = 1
         }
     })
@@ -3535,7 +3594,7 @@ scene("ville_1",()=>{
         if(!velo_monte){
             //monter sur le velo
             if (near && dialogueStage === 1 && currentSpeaker === velo && !savoir_velo) {
-                message("Vous ne savez pas faire de vélo",1)
+                message("Ce n'est pas votre vélo",1)
                 return
             }
 
@@ -4656,7 +4715,7 @@ scene("hopital",()=>{
 
     ELIE.onCollide("zone_2", (zone_2) => {
         if (!near) {
-            ftc_text_near(ELIE, "'E' entrer", zone_2, "zone_2")
+            ftc_text_near(ELIE, "\\[E\\] entrer", zone_2, "zone_2")
             dialogueStage = 1
         }
     })
