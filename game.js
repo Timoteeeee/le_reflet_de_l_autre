@@ -2362,7 +2362,7 @@ scene("terrain_foot",()=>{
     ])
     ballon_foot.onUpdate(() => {
         ballon_foot.z = ballon_foot.pos.y
-        ballon_foot.vel = ballon_foot.vel.scale(0.98)
+        ballon_foot.vel = ballon_foot.vel.scale(1 - 2*dt())
     })
     if(!quete_boule_fin){
         ballon_foot.opacity = 0
@@ -2898,7 +2898,7 @@ scene("partie_foot",()=>{
     ])
     ballon_foot.onUpdate(() => {
         ballon_foot.z = ballon_foot.pos.y
-        ballon_foot.vel = ballon_foot.vel.scale(0.98)
+        ballon_foot.vel = ballon_foot.vel.scale(1 - 2*dt())
     })
 
 // personnages
@@ -3030,6 +3030,10 @@ scene("partie_foot",()=>{
                 ballon_foot.vel = shotDir.scale(oscarKickForce)
 
                 ballon_foot.play("bounce")
+
+                const son_ballon = play("son_ballon", {
+                    volume: 1
+                })
 
                 wait(0.2, () => {
                     if (oscarDirection === "side") {
