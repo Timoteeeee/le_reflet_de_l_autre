@@ -813,7 +813,7 @@ scene("foret_1",()=>{
 
     // message tuto
     if(!tuto_deplacement){
-        message("Utiliser [w][A][S][D] pour vous déplacer", 1)
+        message("Utiliser [W][A][S][D] pour vous déplacer", 1)
         tuto_deplacement = true
     }
 
@@ -1414,6 +1414,7 @@ scene("foret_1",()=>{
             }
             if (near && dialogueStage === 2 && currentSpeaker === MELO && partie_foot && cadeau_1) {
                 ftc_text_near(ELIE, "Ton père est mécano c'est ça ?\nTu peux aller lui montrer ma bécane ?", currentSpeaker, currentTag)
+                savoir_velo = true
                 dialogueStage = 3
                 return
             }
@@ -3143,6 +3144,7 @@ scene("partie_foot",()=>{
     // messages partie
     message("BONNE CHANCE !", 4)
 
+    // affichage du score
     const score_1 = add([text(`${pseudo}: ${score_foot[0]} | Oscar: ${score_foot[1]}`, {
         font: "journal",
     }),
@@ -3162,7 +3164,7 @@ scene("partie_foot",()=>{
     score_2.z = 400
 
     const score_background = add([
-        rect(61,9),
+        rect(55 + pseudo.length*3,9),
         pos(2,2),
         color(BLACK),
         opacity(0.4)
