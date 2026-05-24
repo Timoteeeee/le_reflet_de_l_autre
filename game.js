@@ -123,6 +123,10 @@ loadSprite('garage_meuble_3', 'assets/garage_meuble_3.png');
 loadSprite('garage_marteau', 'assets/garage_marteau.png');
 loadSprite('garage_tournevis', 'assets/garage_tournevis.png');
 loadSprite('garage_balais', 'assets/garage_balais.png');
+loadSprite('garage_cliquet', 'assets/garage_cliquet.png');
+loadSprite('garage_crayon', 'assets/garage_crayon.png');
+loadSprite('garage_cle', 'assets/garage_cle.png');
+loadSprite('garage_double_metre', 'assets/garage_double_metre.png');
 
 // load decors prison
 loadSprite('prison_meuble_1', 'assets/prison_meuble_1.png');
@@ -405,6 +409,24 @@ let velo_location = "foret_1"
 let promptCallback = null
 let fadeTimeout;
 let hideTimeout;
+let partie_foot_faite = false
+
+// garage
+let cle_compteur = false
+let marteau_compteur = false
+let cliquet_compteur = false
+let double_metre_compteur = false
+let crayon_compteur = false
+let tournevis_compteur = false
+let compteur_garage = 0
+
+// état des outils du garage
+let marteau_present = true
+let tournevis_present = true
+let crayon_present = true
+let cliquet_present = true
+let double_metre_present = true
+let cle_present = true
 
 // INVENTAIRE
 let inventoryOpen = false;
@@ -435,6 +457,7 @@ function addItem(spritePath){
         message("Appuyer sur [I] pour afficher votre inventaire", 1)
     }
     tuto_inventaire = true
+
     const img = document.createElement("img");
     img.src = spritePath;
 
@@ -1110,7 +1133,7 @@ scene("foret_1",()=>{
             bool_pas = false
         }
 
-        if(ELIE.velo_utilise) {
+        if(velo_monte) {
             ELIE.velo_utilise.pos.x = ELIE.pos.x
             ELIE.velo_utilise.pos.y = ELIE.pos.y + 11
             ELIE.velo_utilise.z = ELIE.pos.y + 11
@@ -1257,7 +1280,7 @@ scene("foret_1",()=>{
             }
             if (near && dialogueStage === 1 && currentSpeaker === MELA  && quete_boule) {
                 ftc_text_near(ELIE, "Merci ! J'adore jongler. \nJ'ai rien pour te remercier, mais \ntu peux aller voir mon grand frère, \nil te donnera un jouet !", currentSpeaker, currentTag)
-                removeItemBySprite("/assets/boules_de_jonglage.png");
+                removeItemBySprite("assets/boules_de_jonglage.png");
                 quete_boule_1 = true
                 point_quete_boule = false
                 dialogueStage = 2
@@ -1314,34 +1337,38 @@ scene("foret_1",()=>{
                 ftc_text_near(ELIE, "\\[E\\] intéragir", MELO, "melo")
                 dialogueStage = 1
             }
-            
-            if (near && dialogueStage === 1 && currentSpeaker === MELO && partie_foot && !cadeau_1) {
+            if (near && dialogueStage === 1 && currentSpeaker === MELO && quete_boule_1 && partie_foot && !partie_foot_faite) {
+                ftc_text_near(ELIE, "J'suis sûr que t'arrives pas\nà battre Oscar.", currentSpeaker, currentTag)
+                dialogueStage = 2
+                return
+            }
+            if (near && dialogueStage === 2 && currentSpeaker === MELO && quete_boule_1 && partie_foot && !partie_foot_faite) {
+                ftc_text_near(ELIE, "\\[E\\] intéragir", MELO, "melo")
+                dialogueStage = 1
+            }
+            if (near && dialogueStage === 1 && currentSpeaker === MELO && partie_foot_faite && !cadeau_1) {
                 ftc_text_near(ELIE, "Ahah, t'as la tête de quelqu'un\nqui vient de jouer contre Oscar.", currentSpeaker, currentTag)
                 dialogueStage = 2
                 return
             }
-            if (near && dialogueStage === 2 && currentSpeaker === MELO && partie_foot && !cadeau_1) {
+            if (near && dialogueStage === 2 && currentSpeaker === MELO && partie_foot_faite && !cadeau_1) {
                 ftc_text_near(ELIE, "Je tiens mes promesses, tiens.", currentSpeaker, currentTag)
                 cadeau_1 = true
                 dialogueStage = 3
                 return
             }
-            if (near && dialogueStage === 3 && currentSpeaker === MELO && partie_foot && !cadeau_1) {
-                ftc_text_near(ELIE, "\\[E\\] intéragir", MELO, "melo")
-                dialogueStage = 1
-            }
-            if (near && dialogueStage === 1 && currentSpeaker === MELO && partie_foot && cadeau_1) {
-                ftc_text_near(ELIE, "Salut. Mon vélo fait un bruit bizarre.", currentSpeaker, currentTag)
-                dialogueStage = 2
+            if (near && dialogueStage === 3 && currentSpeaker === MELO && partie_foot_faite && cadeau_1) {
+                ftc_text_near(ELIE, "Ah, au fait. Mon vélo fait un bruit bizarre.", currentSpeaker, currentTag)
+                dialogueStage = 4
                 return
             }
-            if (near && dialogueStage === 2 && currentSpeaker === MELO && partie_foot && cadeau_1) {
+            if (near && dialogueStage === 4 && currentSpeaker === MELO && partie_foot_faite && cadeau_1) {
                 ftc_text_near(ELIE, "Ton père est mécano c'est ça ?\nTu peux aller lui montrer ma bécane ?", currentSpeaker, currentTag)
                 savoir_velo = true
-                dialogueStage = 3
+                dialogueStage = 5
                 return
             }
-            if (near && dialogueStage === 3 && currentSpeaker === MELO && partie_foot && cadeau_1) {
+            if (near && dialogueStage === 5 && currentSpeaker === MELO && partie_foot_faite && cadeau_1) {
                 ftc_text_near(ELIE, "\\[E\\] intéragir", MELO, "melo")
                 dialogueStage = 1
             }
@@ -1939,136 +1966,80 @@ scene("terrain_foot",()=>{
 
 // mouvements
     function bouger_droite() {
-        if(!velo_monte){
-            ELIE.move(25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_side");
-            }
+
+        ELIE.move(25, 0);
+        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+            ELIE.flipX = true;
+            ELIE.play("walk_side");
         }
 
-        if(velo_monte){
-            ELIE.move(40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
 
-        if(!bool_pas && !velo_monte){
+        if(!bool_pas){
             pas.play()
             bool_pas = true
         }
     }
     function bouger_stop_droite() {
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
 
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
+        ELIE.play("idle_side")
+
     }
     function bouger_bas() {
-        if(!velo_monte){
-            ELIE.move(0, 25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_front");
-            }
+
+        ELIE.move(0, 25);
+        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+            ELIE.flipX = false;
+            ELIE.play("walk_front");
         }
 
-        if(velo_monte){
-            ELIE.move(0, 40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
 
-        if(!bool_pas && !velo_monte){
+        if(!bool_pas){
             pas.play()
             bool_pas = true
         }
     }
     function bouger_stop_bas(){
-        if(!velo_monte){
-            ELIE.play("idle_front")
-        }
 
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
+        ELIE.play("idle_front")
+
     }
     function bouger_haut(){
-        if(!velo_monte){
-            ELIE.move(0, -25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_behind");
-            }
+
+        ELIE.move(0, -25);
+        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+            ELIE.flipX = true;
+            ELIE.play("walk_behind");
         }
 
-        if(velo_monte){
-            ELIE.move(0, -40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
 
-        if(!bool_pas && !velo_monte){
+        if(!bool_pas){
             pas.play()
             bool_pas = true
         }
     }
     function bouger_stop_haut(){
-        if(!velo_monte){
-            ELIE.play("idle_behind")
-        }
 
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
+        ELIE.play("idle_behind")
+
     }
     function bouger_gauche(){
-        if(!velo_monte){
-            ELIE.move(-25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_side");
-            }
+
+        ELIE.move(-25, 0);
+        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+            ELIE.flipX = false;
+            ELIE.play("walk_side");
         }
 
-        if(velo_monte){
-            ELIE.move(-40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
 
-        if(!bool_pas && !velo_monte){
+        if(!bool_pas){
             pas.play()
             bool_pas = true
         }
     }
     function bouger_stop_gauche(){
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
 
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
+        ELIE.play("idle_side")
+
     }
     function coup_de_pied() {
         onKeyPress("space", () => {
@@ -2164,13 +2135,6 @@ scene("terrain_foot",()=>{
         if (!isAnyMovementKeyDown() && !navigator.getGamepads()[0]) {
             pas.stop()
             bool_pas = false
-        }
-
-        if(ELIE.velo_utilise) {
-            ELIE.velo_utilise.pos.x = ELIE.pos.x
-            ELIE.velo_utilise.pos.y = ELIE.pos.y + 11
-            ELIE.velo_utilise.z = ELIE.pos.y + 11
-            ELIE.z = ELIE.pos.y + 11
         }
     })
 
@@ -2482,7 +2446,7 @@ scene("partie_foot",()=>{
     ]);
 
     zone_arrivee = "partie"
-
+    partie_foot_faite = true
 // INITIALISATION VARIABLE SPECIFIQUE
     let var_goal = false
     nearball = false
@@ -2503,136 +2467,80 @@ scene("partie_foot",()=>{
 
 // mouvements
     function bouger_droite() {
-        if(!velo_monte){
-            ELIE.move(25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_side");
-            }
+
+        ELIE.move(25, 0);
+        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+            ELIE.flipX = true;
+            ELIE.play("walk_side");
         }
 
-        if(velo_monte){
-            ELIE.move(40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
 
-        if(!bool_pas && !velo_monte){
+        if(!bool_pas){
             pas.play()
             bool_pas = true
         }
     }
     function bouger_stop_droite() {
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
 
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
+        ELIE.play("idle_side")
+
     }
     function bouger_bas() {
-        if(!velo_monte){
-            ELIE.move(0, 25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_front");
-            }
+
+        ELIE.move(0, 25);
+        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+            ELIE.flipX = false;
+            ELIE.play("walk_front");
         }
 
-        if(velo_monte){
-            ELIE.move(0, 40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
 
-        if(!bool_pas && !velo_monte){
+        if(!bool_pas){
             pas.play()
             bool_pas = true
         }
     }
     function bouger_stop_bas(){
-        if(!velo_monte){
-            ELIE.play("idle_front")
-        }
 
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
+        ELIE.play("idle_front")
+
     }
     function bouger_haut(){
-        if(!velo_monte){
-            ELIE.move(0, -25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_behind");
-            }
+
+        ELIE.move(0, -25);
+        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+            ELIE.flipX = true;
+            ELIE.play("walk_behind");
         }
 
-        if(velo_monte){
-            ELIE.move(0, -40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
 
-        if(!bool_pas && !velo_monte){
+        if(!bool_pas){
             pas.play()
             bool_pas = true
         }
     }
     function bouger_stop_haut(){
-        if(!velo_monte){
-            ELIE.play("idle_behind")
-        }
 
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
+        ELIE.play("idle_behind")
+
     }
     function bouger_gauche(){
-        if(!velo_monte){
-            ELIE.move(-25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_side");
-            }
+
+        ELIE.move(-25, 0);
+        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+            ELIE.flipX = false;
+            ELIE.play("walk_side");
         }
 
-        if(velo_monte){
-            ELIE.move(-40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
 
-        if(!bool_pas && !velo_monte){
+        if(!bool_pas){
             pas.play()
             bool_pas = true
         }
     }
     function bouger_stop_gauche(){
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
 
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
+        ELIE.play("idle_side")
+
     }
     function coup_de_pied() {
         onKeyPress("space", () => {
@@ -2728,13 +2636,6 @@ scene("partie_foot",()=>{
         if (!isAnyMovementKeyDown() && !navigator.getGamepads()[0]) {
             pas.stop()
             bool_pas = false
-        }
-
-        if(ELIE.velo_utilise) {
-            ELIE.velo_utilise.pos.x = ELIE.pos.x
-            ELIE.velo_utilise.pos.y = ELIE.pos.y + 11
-            ELIE.velo_utilise.z = ELIE.pos.y + 11
-            ELIE.z = ELIE.pos.y + 11
         }
     })
 
@@ -3448,7 +3349,7 @@ scene("ville_1",()=>{
             bool_pas = false
         }
 
-        if(ELIE.velo_utilise) {
+        if(velo_monte) {
             ELIE.velo_utilise.pos.x = ELIE.pos.x
             ELIE.velo_utilise.pos.y = ELIE.pos.y + 11
             ELIE.velo_utilise.z = ELIE.pos.y + 11
@@ -3630,10 +3531,9 @@ scene("ville_1",()=>{
     })
 
     ELIE.onCollide("zone_garage", (zone_garage) => {
-        if(!velo_monte){
-            pas.stop(),
-            go("garage")
-        }
+        pas.stop(),
+        go("garage")
+        
     })
 
     ELIE.onCollide("zone_hopital", (zone_garage) => {
@@ -3655,6 +3555,21 @@ scene("ville_1",()=>{
             pas.stop(),
             go("ecole")
         }
+    })
+
+    ELIE.onCollide("velo", (velo) => {
+        if (!near) {
+            ftc_text_near(ELIE, "\\[E\\] intéragir", velo, "velo")
+            dialogueStage = 1
+        }
+    })
+
+    ELIE.onCollideEnd("velo", () => {
+        destroyCurrentMessages()
+        near = false
+        dialogueStage = 0
+        currentSpeaker = null
+        currentTag = null
     })
 })
 
@@ -3678,6 +3593,7 @@ scene("garage",()=>{
     ELIE.play("idle_behind")
 
     if(velo_monte){
+        ELIE.pos.y = 80
         velo_location = "garage"
         ELIE.play("velo")
         ELIE.velo_utilise = add([
@@ -3922,7 +3838,7 @@ scene("garage",()=>{
             bool_pas = false
         }
 
-        if(ELIE.velo_utilise) {
+        if(velo_monte) {
             ELIE.velo_utilise.pos.x = ELIE.pos.x
             ELIE.velo_utilise.pos.y = ELIE.pos.y + 11
             ELIE.velo_utilise.z = ELIE.pos.y + 11
@@ -3932,31 +3848,226 @@ scene("garage",()=>{
 
 // INTERACTION
     onKeyPress("e", () => {
-        if (near && dialogueStage === 1 && currentSpeaker === PAPA && !velo_garage) {
-            let num = getRandomInt(3) 
-            if (num === 0) {
-                ftc_text_near(ELIE, `Salut Tim !\nT'as quelque chose à me dire ?`, currentSpeaker, currentTag)
+        if(!velo_monte){
+            // prendre outils
+            if (near && dialogueStage === 1 && currentSpeaker === marteau) {
+                if(currentSlot < slots.length){
+                    destroy(marteau)
+                    addItem("assets/garage_marteau.png")
+                    marteau_compteur = true
+                    marteau_present = false
+                    return                    
+                }
+                else {
+                    message("Votre inventaire est plein !")                
+                }
+            }
+            if (near && dialogueStage === 1 && currentSpeaker === tournevis) {
+                if(currentSlot < slots.length){
+                    destroy(tournevis)
+                    addItem("assets/garage_tournevis.png")
+                    tournevis_compteur = true
+                    tournevis_present = false
+                    return                    
+                }
+                else {
+                    message("Votre inventaire est plein !")                
+                }
+            }
+            if (near && dialogueStage === 1 && currentSpeaker === crayon) {
+                if(currentSlot < slots.length){
+                    destroy(crayon)
+                    addItem("assets/garage_crayon.png")
+                    crayon_compteur = true
+                    crayon_present = false
+                    return                    
+                }
+                else {
+                    message("Votre inventaire est plein !")                
+                }
+            }
+            if (near && dialogueStage === 1 && currentSpeaker === cliquet) {
+                if(currentSlot < slots.length){
+                    destroy(cliquet)
+                    addItem("assets/garage_cliquet.png")
+                    cliquet_compteur = true
+                    cliquet_present = false
+                    return                    
+                }
+                else {
+                    message("Votre inventaire est plein !")                
+                }
+            }
+            if (near && dialogueStage === 1 && currentSpeaker === double_metre) {
+                if(currentSlot < slots.length){
+                    destroy(double_metre)
+                    addItem("assets/garage_double_metre.png")
+                    double_metre_compteur = true
+                    double_metre_present = false
+                    return                    
+                }
+                else {
+                    message("Votre inventaire est plein !")                
+                }
+            }
+            if (near && dialogueStage === 1 && currentSpeaker === cle) {
+                if(currentSlot < slots.length){
+                    destroy(cle)
+                    addItem("assets/garage_cle.png")
+                    cle_compteur = true
+                    cle_present = false
+                    return                    
+                }
+                else {
+                    message("Votre inventaire est plein !")                
+                }
             }
 
-            if (num === 1) {
-                ftc_text_near(ELIE, "Tu es libre jeudi ?\nJ'aurais besoin d'un coup de main...", currentSpeaker, currentTag)
+            // poser outils
+            if (near && dialogueStage === 1 && currentSpeaker === boite_2 && cle_compteur) {
+                removeItemBySprite("assets/garage_cle.png")
+                compteur_garage++
+                cle_compteur = false
+                return
+            }
+            if (near && dialogueStage === 1 && currentSpeaker === boite_2 && tournevis_compteur) {
+                removeItemBySprite("assets/garage_tournevis.png")
+                compteur_garage++
+                tournevis_compteur = false
+                return
+            }
+            if (near && dialogueStage === 1 && currentSpeaker === boite_2 && marteau_compteur) {
+                removeItemBySprite("assets/garage_marteau.png")
+                compteur_garage++
+                marteau_compteur = false
+                return
+            }
+            if (near && dialogueStage === 1 && currentSpeaker === boite_2 && double_metre_compteur) {
+                removeItemBySprite("assets/garage_double_metre.png")
+                compteur_garage++
+                double_metre_compteur = false
+                return
+            }
+            if (near && dialogueStage === 1 && currentSpeaker === boite_2 && cliquet_compteur) {
+                removeItemBySprite("assets/garage_cliquet.png")
+                compteur_garage++
+                cliquet_compteur = false
+                return
+            }
+            if (near && dialogueStage === 1 && currentSpeaker === boite_2 && crayon_compteur) {
+                removeItemBySprite("assets/garage_crayon.png")
+                compteur_garage++
+                crayon_compteur = false
+                return
             }
 
-            if (num === 2) {
-                ftc_text_near(ELIE, "Tu pourrais rendre visite à ton\nfrère de temps en temps,\nça lui ferait plaisir.", currentSpeaker, currentTag)
+            // monter sur le velo
+            if (near && dialogueStage === 1 && currentSpeaker === velo && !savoir_velo) {
+                message("Ce n'est pas votre vélo",1)
+                return
             }
-            return
+
+            if (near && dialogueStage === 1 && currentSpeaker === velo && savoir_velo) {
+                destroy(velo)
+                ELIE.play("velo")
+                ELIE.velo_utilise = add([
+                    sprite("velo"),
+                    pos(ELIE.pos.x, ELIE.pos.y + 11),
+                    body(),
+                    anchor("bot"),
+                    area({
+                        shape: new Rect(vec2(0, 0), 20, 10)
+                    }),
+                    "velo"
+                ]);
+                velo_monte = true
+                return
+            }
+
+            // dialogues papa
+            if (near && dialogueStage === 1 && currentSpeaker === PAPA && velo_location != "garage") {
+                let num = getRandomInt(3) 
+                if (num === 0) {
+                    ftc_text_near(ELIE, `Salut ${pseudo} !\nT'as quelque chose à me dire ?`, currentSpeaker, currentTag)
+                }
+
+                if (num === 1) {
+                    ftc_text_near(ELIE, "Tu es libre jeudi ?\nJ'aurais besoin d'un coup de main...", currentSpeaker, currentTag)
+                }
+
+                if (num === 2) {
+                    ftc_text_near(ELIE, "Tu pourrais rendre visite à ton\nfrère de temps en temps,\nça lui ferait plaisir.", currentSpeaker, currentTag)
+                }
+                return
+            }
+            
+            if (near && dialogueStage === 1 && currentSpeaker === PAPA && velo_location === "garage" && compteur_garage < 6) {
+                ftc_text_near(ELIE, `Salut ${pseudo} !\nOù t'as trouvé ce vélo ?`, currentSpeaker, currentTag)
+                dialogueStage = 2
+                return
+            }
+
+            if (near && dialogueStage === 2 && currentSpeaker === PAPA && velo_location === "garage" && compteur_garage < 6) {
+                ftc_text_near(ELIE, `D'accord, je vois...\nil est gentil avec toi ?`, currentSpeaker, currentTag)
+                dialogueStage = 3
+                return
+            }
+
+            if (near && dialogueStage === 3 && currentSpeaker === PAPA && velo_location === "garage" && compteur_garage < 6) {
+                ftc_text_near(ELIE, `Bon, tant mieux. Je vais regarder ça,\nmais j'ai besoin que tu m'aides\nà ranger l'atelier avant !`, currentSpeaker, currentTag)
+                dialogueStage = 4
+                return
+            }
+
+            if (near && dialogueStage === 4 && currentSpeaker === PAPA && velo_location === "garage" && compteur_garage < 6) {
+                ftc_text_near(ELIE, `Mets tous les outils dans la\ngrosse caisse à outils.`, currentSpeaker, currentTag)
+                dialogueStage = 5
+                return
+            }
+
+            if (near && dialogueStage === 5 && currentSpeaker === PAPA && velo_location === "garage" && compteur_garage < 6) {
+                ftc_text_near(ELIE, "\\[E\\] intéragir", PAPA, "papa")
+                dialogueStage = 1
+            }
+
+            if (near && dialogueStage === 1 && currentSpeaker === PAPA && velo_location === "garage" && compteur_garage > 5) {
+                ftc_text_near(ELIE, `Merci ! J'ai regardé ton vélo en attendant.`, currentSpeaker, currentTag)
+                dialogueStage = 2
+                return
+            }
+            if (near && dialogueStage === 2 && currentSpeaker === PAPA && velo_location === "garage" && compteur_garage > 5) {
+                ftc_text_near(ELIE, `C'était un détail tu sais, tu aurais\npu le réparer toi-même.`, currentSpeaker, currentTag)
+                dialogueStage = 3
+                return
+            }
+            if (near && dialogueStage === 3 && currentSpeaker === PAPA && velo_location === "garage" && compteur_garage > 5) {
+                ftc_text_near(ELIE, `Aller file si tu veux rendre son vélo à Mélo.\nIl doit déjà être à l'école vu l'heure.`, currentSpeaker, currentTag)
+                dialogueStage = 4
+                return
+            }
+            if (near && dialogueStage === 4 && currentSpeaker === PAPA && velo_location === "garage" && compteur_garage > 5) {
+                ftc_text_near(ELIE, "\\[E\\] intéragir", PAPA, "papa")
+                dialogueStage = 1
+            }
         }
-        
-        if (near && dialogueStage === 1 && currentSpeaker === PAPA && velo_garage) {
-            ftc_text_near(ELIE, "T'as aidé ma soeur. C'est cool.", currentSpeaker, currentTag)
-            dialogueStage = 2
-            return
-        }
 
-        if (near && dialogueStage === 2 && currentSpeaker === PAPA && velo_garage) {
-            ftc_text_near(ELIE, "\\[E\\] intéragir", PAPA, "papa")
-            dialogueStage = 1
+        if(velo_monte){
+            destroy(ELIE.velo_utilise)
+            ELIE.play("idle_side")
+            velo = add([
+                pos(ELIE.pos.x,ELIE.pos.y),
+                sprite('velo'),
+                body({ isStatic: true}),
+                anchor("bot"),
+                area({
+                    shape: new Rect(vec2(0, 0), 20, 3)
+                }),
+                'velo'
+            ])
+            position_velo_x = velo.pos.x
+            position_velo_y = velo.pos.y
+            velo.z = velo.pos.y
+            velo_monte = false
         }
     })
 
@@ -4002,6 +4113,14 @@ scene("garage",()=>{
         opacity(0)        
     ])
 
+    const porte = add([
+        rect(23, 10),
+        pos(40,98),
+        area(),
+        body({isStatic: true}),
+        opacity(0)        
+    ])
+
     // changement zone
     const zone = add([
         rect(23, 2),
@@ -4042,9 +4161,11 @@ scene("garage",()=>{
 
     const boite_2 = add([
         sprite("garage_boite_2"),
-        pos(6,20),
+        pos(15,45),
         area(),
-        body({ isStatic: true})
+        body({ isStatic: true}),
+        anchor("bot"),
+        "boite_2"
     ])
 
     const balais = add([
@@ -4054,19 +4175,77 @@ scene("garage",()=>{
         body({ isStatic: true})
     ])
 
-    const marteau = add([
-        sprite("garage_marteau"),
-        pos(90,80),
-        area(),
-        body()
-    ])    
+    let marteau
+    if(marteau_present){
+        marteau = add([
+            sprite("garage_marteau"),
+            pos(getRandomInt(80)+20,getRandomInt(50)+30),
+            area(),
+            body(),
+            anchor("bot"),
+            "outil"
+        ])          
+    }
 
-    const tournevis = add([
-        sprite("garage_tournevis"),
-        pos(95,89),
-        area(),
-        body()
-    ])
+    let tournevis
+    if(tournevis_present){
+        tournevis = add([
+            sprite("garage_tournevis"),
+            pos(getRandomInt(80)+20,getRandomInt(50)+30),
+            area(),
+            body(),
+            anchor("bot"),
+            "outil"
+        ])          
+    }
+
+    let crayon
+    if(crayon_present){
+        crayon = add([
+            sprite("garage_crayon"),
+            pos(getRandomInt(80)+20,getRandomInt(50)+30),
+            area(),
+            body(),
+            anchor("bot"),
+            "outil"
+        ])          
+    }
+
+    let double_metre
+    if(double_metre_present){
+        double_metre = add([
+            sprite("garage_double_metre"),
+            pos(getRandomInt(80)+20,getRandomInt(50)+30),
+            area(),
+            body(),
+            anchor("bot"),
+            "outil"
+        ])          
+    }
+
+    let cle
+    if(cle_present){
+        cle = add([
+            sprite("garage_cle"),
+            pos(getRandomInt(80)+20,getRandomInt(50)+30),
+            area(),
+            body(),
+            anchor("bot"),
+            "outil"
+        ])          
+    }
+
+    let cliquet
+    if(cliquet_present){
+        cliquet = add([
+            sprite("garage_cliquet"),
+            pos(getRandomInt(80)+20,getRandomInt(50)+30),
+            area(),
+            body(),
+            anchor("bot"),
+            "outil"
+        ])          
+    }
 
     // personnages
     const PAPA = add([
@@ -4089,12 +4268,38 @@ scene("garage",()=>{
         }
     })
 
+    // velo
+    if(!velo_monte && velo_location === "garage"){
+        velo = add([
+            pos(position_velo_x,position_velo_y),
+            sprite('velo'),
+            body({ isStatic: true}),
+            anchor("bot"),
+            area({
+                shape: new Rect(vec2(0, 0), 20, 3)
+            }),
+            'velo'
+        ])
+        velo.z = velo.pos.y
+        velo_location = "garage"
+    }
+
 // COLLISIONS
     // changement zone
     ELIE.onCollide("zone", (zone) => {
         pas.stop(),
         zone_arrivee = "garage",
         go("ville_1")
+    })
+
+    ELIE.onUpdate(() => {
+        if(velo_monte){
+            ELIE.velo_utilise.onCollide("zone", (zone) => {
+                pas.stop(),
+                zone_arrivee = "garage",
+                go("ville_1")
+            })
+        }   
     })
 
     // interactions
@@ -4112,6 +4317,52 @@ scene("garage",()=>{
         currentSpeaker = null
         currentTag = null
     })
+
+    // velo
+    ELIE.onCollide("velo", (velo) => {
+        if (!near) {
+            ftc_text_near(ELIE, "\\[E\\] intéragir", velo, "velo")
+            dialogueStage = 1
+        }
+    })
+
+    ELIE.onCollideEnd("velo", () => {
+        destroyCurrentMessages()
+        near = false
+        dialogueStage = 0
+        currentSpeaker = null
+        currentTag = null
+    })
+
+    ELIE.onCollide("outil", (outil) => {
+        if (!near) {
+            ftc_text_near(ELIE, "\\[E\\] prendre", outil, "outil")
+            dialogueStage = 1
+        }
+    })
+
+    ELIE.onCollideEnd("outil", () => {
+        destroyCurrentMessages()
+        near = false
+        dialogueStage = 0
+        currentSpeaker = null
+        currentTag = null
+    })
+
+    ELIE.onCollide("boite_2", (boite_2) => {
+        if (!near) {
+            ftc_text_near(ELIE, "\\[E\\] intéragir", boite_2, "boite_2")
+            dialogueStage = 1
+        }
+    })
+
+    ELIE.onCollideEnd("boite_2", () => {
+        destroyCurrentMessages()
+        near = false
+        dialogueStage = 0
+        currentSpeaker = null
+        currentTag = null
+    })
 })
 
 scene("hopital",()=>{
@@ -4123,7 +4374,7 @@ scene("hopital",()=>{
     // INITIALISATION ET MOUVEMENTS ELIE
     const ELIE = add([
         sprite(apparence),
-        pos(8,59),
+        pos(10,59),
         anchor("bot"),
         area({
             shape: new Rect(vec2(0, 0), 8, 2)
@@ -4369,7 +4620,7 @@ scene("hopital",()=>{
             bool_pas = false
         }
 
-        if(ELIE.velo_utilise) {
+        if(velo_monte) {
             ELIE.velo_utilise.pos.x = ELIE.pos.x
             ELIE.velo_utilise.pos.y = ELIE.pos.y + 11
             ELIE.velo_utilise.z = ELIE.pos.y + 11
@@ -4728,7 +4979,7 @@ scene("hopital_chambre",()=>{
             bool_pas = false
         }
 
-        if(ELIE.velo_utilise) {
+        if(velo_monte) {
             ELIE.velo_utilise.pos.x = ELIE.pos.x
             ELIE.velo_utilise.pos.y = ELIE.pos.y + 11
             ELIE.velo_utilise.z = ELIE.pos.y + 11
