@@ -409,10 +409,19 @@ const son_velo = play("son_velo", {
 })
 son_velo.stop()
 const son_velo_casse = play("son_velo_casse", {
-        volume: 1,
+        volume: 0.9,
         loop: true
 })
 son_velo_casse.stop()
+const son_velo_arret = play("son_velo_arret", {
+        volume: 1,
+        loop: false
+})
+son_velo_arret.stop()
+const son_ballon = play("son_ballon", {
+    volume: 1
+})
+son_ballon.stop()
 const overlay = document.getElementById("overlay");
 const messageBox = document.getElementById("message");
 let tuto_deplacement = false
@@ -466,7 +475,7 @@ const slots = document.querySelectorAll(".slot");
 
 let currentSlot = 0;
 
-function addItem(spritePath){
+function addItem(spritePath, objet){
     if(!tuto_inventaire){
         message("Appuyer sur [I] pour afficher votre inventaire", 1)
     }
@@ -474,12 +483,12 @@ function addItem(spritePath){
 
     const img = document.createElement("img");
     img.src = spritePath;
-
     slots[currentSlot].appendChild(img);
+    texte_inventaire(`Vous avez récupéré ${objet}`)
     currentSlot++;
 }
 
-function removeItemBySprite(spritePath){
+function removeItemBySprite(spritePath, objet){
 
     for(let i = 0; i < slots.length; i++){
 
@@ -489,9 +498,47 @@ function removeItemBySprite(spritePath){
 
             slots[i].innerHTML = "";
             currentSlot--;
+            texte_inventaire(`Vous avez abandonné ${objet}`)
             return; // stop après suppression
         }
     }
+}
+
+function texte_inventaire(texte){
+    const message_inventaire_1 = add([text(texte, {
+        font: "journal"
+    }),
+    pos(3, 3),
+    scale(0.10),
+    color(BLACK),
+    opacity(1)
+    ]);
+    message_inventaire_1.z = 500
+    const message_inventaire_2 = add([text(texte, {
+        font: "journal"
+    }),
+    pos(message_inventaire_1.pos.x + 0.3, message_inventaire_1.pos.y - 0.3 ),
+    scale(0.10),
+    color(WHITE),
+    opacity(1)
+    ]);
+    message_inventaire_2.z = 500
+    wait(2, () => {
+        let elapsed = 0;
+        const fadeDuration = 1.5;
+
+        onUpdate(() => {
+            elapsed += dt();
+            const t = Math.min(elapsed / fadeDuration, 1);
+            message_inventaire_1.opacity = 1 - t;
+            message_inventaire_2.opacity = 1 - t;
+
+            if(t >= 1){
+                destroy(message_inventaire_1);
+                destroy(message_inventaire_2);
+            }
+        });
+    });
 }
 
 // INITIALISATION FONCTIONS
@@ -960,11 +1007,8 @@ scene("foret_1",()=>{
         if(velo_monte){
             ELIE.velo_utilise.stop()
                 if (!isAnyMovementKeyDown()){
-                const son_velo_arret = play("son_velo_arret", {
-                        volume: 1,
-                        loop: false
-                })
-            }
+                    son_velo_arret.play()
+                }
         }
     }
     function bouger_bas() {
@@ -1007,11 +1051,8 @@ scene("foret_1",()=>{
         if(velo_monte){
             ELIE.velo_utilise.stop()
                 if (!isAnyMovementKeyDown()){
-                const son_velo_arret = play("son_velo_arret", {
-                        volume: 1,
-                        loop: false
-                })
-            }
+                    son_velo_arret.play()
+                }
         }
     }
     function bouger_haut(){
@@ -1054,11 +1095,8 @@ scene("foret_1",()=>{
         if(velo_monte){
             ELIE.velo_utilise.stop()
                 if (!isAnyMovementKeyDown()){
-                const son_velo_arret = play("son_velo_arret", {
-                        volume: 1,
-                        loop: false
-                })
-            }
+                    son_velo_arret.play()
+                }
         }
     }
     function bouger_gauche(){
@@ -1101,11 +1139,8 @@ scene("foret_1",()=>{
         if(velo_monte){
             ELIE.velo_utilise.stop()
                 if (!isAnyMovementKeyDown()){
-                const son_velo_arret = play("son_velo_arret", {
-                        volume: 1,
-                        loop: false
-                })
-            }
+                    son_velo_arret.play()
+                }
         }
     }
     function coup_de_pied() {
@@ -1309,7 +1344,7 @@ scene("foret_1",()=>{
             if (near && dialogueStage === 1 && currentSpeaker === boules_de_jonglage) {
                 destroy(boules_de_jonglage)
                 quete_boule = true
-                addItem("assets/boules_de_jonglage.png")
+                addItem("assets/boules_de_jonglage.png", "'boules de jonglage'")
                 return
             }
 
@@ -1355,7 +1390,7 @@ scene("foret_1",()=>{
             }
             if (near && dialogueStage === 1 && currentSpeaker === MELA  && quete_boule) {
                 ftc_text_near(ELIE, "Merci ! J'adore jongler. \nJ'ai rien pour te remercier, mais \ntu peux aller voir mon grand frère, \nil te donnera un jouet !", currentSpeaker, currentTag)
-                removeItemBySprite("assets/boules_de_jonglage.png");
+                removeItemBySprite("assets/boules_de_jonglage.png", "'boules de jonglage'");
                 quete_boule_1 = true
                 point_quete_boule = false
                 dialogueStage = 2
@@ -1398,7 +1433,7 @@ scene("foret_1",()=>{
                 ftc_text_near(ELIE, "Elle a encore promis que je donnerais un jouet ? \nBon... si t'amènes ce ballon à mon pote, \npeut-être que je t'en donne un.", currentSpeaker, currentTag)
                 dialogueStage = 4
                 if(!quete_boule_2){
-                    addItem("assets/ballon_foot_item.png")
+                    addItem("assets/ballon_foot_item.png", "'ballon de foot'")
                 }
                 quete_boule_2 = true
                 return
@@ -2142,9 +2177,7 @@ scene("terrain_foot",()=>{
 
             ballon_foot.vel = dir.scale(force)
 
-            const son_ballon = play("son_ballon", {
-                volume: 1
-            })
+            son_ballon.play()
 
             tuto_ballon = true   
 
@@ -2437,7 +2470,7 @@ scene("terrain_foot",()=>{
 
         if (near && dialogueStage === 1 && currentSpeaker === OSCAR && quete_boule_2 && !partie_foot) {
             ftc_text_near(ELIE, "T'as trouvé mon ballon ! Merci beaucoup...", currentSpeaker, currentTag)
-            removeItemBySprite("/assets/ballon_foot_item.png");
+            removeItemBySprite("/assets/ballon_foot_item.png", "'ballon de foot'");
             dialogueStage = 2
             quete_boule_fin = true
             ballon_foot.opacity = 1
@@ -2643,10 +2676,7 @@ scene("partie_foot",()=>{
 
             ballon_foot.vel = dir.scale(force)
 
-            const son_ballon = play("son_ballon", {
-                volume: 1
-            })
-
+            son_ballon.play()
             tuto_ballon = true   
 
             ballon_foot.play("bounce")
@@ -3238,11 +3268,8 @@ scene("ville_1",()=>{
         if(velo_monte){
             ELIE.velo_utilise.stop()
                 if (!isAnyMovementKeyDown()){
-                const son_velo_arret = play("son_velo_arret", {
-                        volume: 1,
-                        loop: false
-                })
-            }
+                    son_velo_arret.play()
+                }
         }
     }
     function bouger_bas() {
@@ -3285,11 +3312,8 @@ scene("ville_1",()=>{
         if(velo_monte){
             ELIE.velo_utilise.stop()
                 if (!isAnyMovementKeyDown()){
-                const son_velo_arret = play("son_velo_arret", {
-                        volume: 1,
-                        loop: false
-                })
-            }
+                    son_velo_arret.play()
+                }
         }
     }
     function bouger_haut(){
@@ -3332,11 +3356,8 @@ scene("ville_1",()=>{
         if(velo_monte){
             ELIE.velo_utilise.stop()
                 if (!isAnyMovementKeyDown()){
-                const son_velo_arret = play("son_velo_arret", {
-                        volume: 1,
-                        loop: false
-                })
-            }
+                    son_velo_arret.play()
+                }
         }
     }
     function bouger_gauche(){
@@ -3379,11 +3400,8 @@ scene("ville_1",()=>{
         if(velo_monte){
             ELIE.velo_utilise.stop()
                 if (!isAnyMovementKeyDown()){
-                const son_velo_arret = play("son_velo_arret", {
-                        volume: 1,
-                        loop: false
-                })
-            }
+                    son_velo_arret.play()
+                }
         }
     }
     function coup_de_pied() {
@@ -3787,11 +3805,8 @@ scene("garage",()=>{
         if(velo_monte){
             ELIE.velo_utilise.stop()
                 if (!isAnyMovementKeyDown()){
-                const son_velo_arret = play("son_velo_arret", {
-                        volume: 1,
-                        loop: false
-                })
-            }
+                    son_velo_arret.play()
+                }
         }
     }
     function bouger_bas() {
@@ -3834,11 +3849,8 @@ scene("garage",()=>{
         if(velo_monte){
             ELIE.velo_utilise.stop()
                 if (!isAnyMovementKeyDown()){
-                const son_velo_arret = play("son_velo_arret", {
-                        volume: 1,
-                        loop: false
-                })
-            }
+                    son_velo_arret.play()
+                }
         }
     }
     function bouger_haut(){
@@ -3881,11 +3893,8 @@ scene("garage",()=>{
         if(velo_monte){
             ELIE.velo_utilise.stop()
                 if (!isAnyMovementKeyDown()){
-                const son_velo_arret = play("son_velo_arret", {
-                        volume: 1,
-                        loop: false
-                })
-            }
+                    son_velo_arret.play()
+                }
         }
     }
     function bouger_gauche(){
@@ -3928,11 +3937,8 @@ scene("garage",()=>{
         if(velo_monte){
             ELIE.velo_utilise.stop()
                 if (!isAnyMovementKeyDown()){
-                const son_velo_arret = play("son_velo_arret", {
-                        volume: 1,
-                        loop: false
-                })
-            }
+                    son_velo_arret.play()
+                }
         }
     }
     function coup_de_pied() {
@@ -4050,7 +4056,7 @@ scene("garage",()=>{
             if (near && dialogueStage === 1 && currentSpeaker === marteau) {
                 if(currentSlot < slots.length){
                     destroy(marteau)
-                    addItem("assets/garage_marteau.png")
+                    addItem("assets/garage_marteau.png", "'marteau'")
                     marteau_compteur = true
                     marteau_present = false
                     return                    
@@ -4062,7 +4068,7 @@ scene("garage",()=>{
             if (near && dialogueStage === 1 && currentSpeaker === tournevis) {
                 if(currentSlot < slots.length){
                     destroy(tournevis)
-                    addItem("assets/garage_tournevis.png")
+                    addItem("assets/garage_tournevis.png", "'tournevis'")
                     tournevis_compteur = true
                     tournevis_present = false
                     return                    
@@ -4074,7 +4080,7 @@ scene("garage",()=>{
             if (near && dialogueStage === 1 && currentSpeaker === crayon) {
                 if(currentSlot < slots.length){
                     destroy(crayon)
-                    addItem("assets/garage_crayon.png")
+                    addItem("assets/garage_crayon.png", "'crayon'")
                     crayon_compteur = true
                     crayon_present = false
                     return                    
@@ -4086,7 +4092,7 @@ scene("garage",()=>{
             if (near && dialogueStage === 1 && currentSpeaker === cliquet) {
                 if(currentSlot < slots.length){
                     destroy(cliquet)
-                    addItem("assets/garage_cliquet.png")
+                    addItem("assets/garage_cliquet.png", "'cliquet'")
                     cliquet_compteur = true
                     cliquet_present = false
                     return                    
@@ -4098,7 +4104,7 @@ scene("garage",()=>{
             if (near && dialogueStage === 1 && currentSpeaker === double_metre) {
                 if(currentSlot < slots.length){
                     destroy(double_metre)
-                    addItem("assets/garage_double_metre.png")
+                    addItem("assets/garage_double_metre.png", "'double mètre'")
                     double_metre_compteur = true
                     double_metre_present = false
                     return                    
@@ -4110,7 +4116,7 @@ scene("garage",()=>{
             if (near && dialogueStage === 1 && currentSpeaker === cle) {
                 if(currentSlot < slots.length){
                     destroy(cle)
-                    addItem("assets/garage_cle.png")
+                    addItem("assets/garage_cle.png", "'clé'")
                     cle_compteur = true
                     cle_present = false
                     return                    
@@ -4122,37 +4128,37 @@ scene("garage",()=>{
 
             // poser outils
             if (near && dialogueStage === 1 && currentSpeaker === boite_2 && cle_compteur) {
-                removeItemBySprite("assets/garage_cle.png")
+                removeItemBySprite("assets/garage_cle.png", "'clé'")
                 compteur_garage++
                 cle_compteur = false
                 return
             }
             if (near && dialogueStage === 1 && currentSpeaker === boite_2 && tournevis_compteur) {
-                removeItemBySprite("assets/garage_tournevis.png")
+                removeItemBySprite("assets/garage_tournevis.png", "'tournevis'")
                 compteur_garage++
                 tournevis_compteur = false
                 return
             }
             if (near && dialogueStage === 1 && currentSpeaker === boite_2 && marteau_compteur) {
-                removeItemBySprite("assets/garage_marteau.png")
+                removeItemBySprite("assets/garage_marteau.png", "'marteau'")
                 compteur_garage++
                 marteau_compteur = false
                 return
             }
             if (near && dialogueStage === 1 && currentSpeaker === boite_2 && double_metre_compteur) {
-                removeItemBySprite("assets/garage_double_metre.png")
+                removeItemBySprite("assets/garage_double_metre.png", "'double mètre'")
                 compteur_garage++
                 double_metre_compteur = false
                 return
             }
             if (near && dialogueStage === 1 && currentSpeaker === boite_2 && cliquet_compteur) {
-                removeItemBySprite("assets/garage_cliquet.png")
+                removeItemBySprite("assets/garage_cliquet.png", "'cliquet'")
                 compteur_garage++
                 cliquet_compteur = false
                 return
             }
             if (near && dialogueStage === 1 && currentSpeaker === boite_2 && crayon_compteur) {
-                removeItemBySprite("assets/garage_crayon.png")
+                removeItemBySprite("assets/garage_crayon.png", "'crayon'")
                 compteur_garage++
                 crayon_compteur = false
                 return
@@ -5679,6 +5685,24 @@ scene("prison",()=>{
 
 scene("ecole",()=>{
 
+    add([
+        sprite('accueil'),
+    ]);
+
+    message("Vous avez terminé la démo", 1)
+    wait(7, () => {
+        message("Merci d'avoir joué !", 1)
+        wait(7, () => {
+            message("C'est très long de coder un jeu", 1)
+            wait(7, () => {
+                message("Mais je fais la suite au plus vite", 1)
+                wait(7, () => {
+                    message("À bientôt !", 1)
+                })
+            })
+        })
+    })
 })
+
 
 go("choix")
