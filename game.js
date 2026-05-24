@@ -302,6 +302,18 @@ loadSprite('melo', 'assets/melo.png', {
     }
 });
 
+loadSprite('papa', 'assets/papa.png', {
+    sliceX: 2,
+    anims: {
+        idle_front: {
+            from: 0,
+            to: 1,
+            speed: 1.84,
+            loop: true
+        }
+    }
+});
+
 loadSprite('oscar', 'assets/oscar.png', {
     sliceX: 8,
     sliceY: 4,
@@ -446,6 +458,16 @@ function removeItemBySprite(spritePath){
 }
 
 // INITIALISATION FONCTIONS
+// son marcher
+function playFootsteps() {
+    if (!bool_pas) {
+        pas.play()
+        bool_pas = true
+    }
+}
+function isAnyMovementKeyDown() {
+    return isKeyDown("w") || isKeyDown("a") || isKeyDown("s") || isKeyDown("d") || isKeyDown("left") || isKeyDown("up") || isKeyDown("right") || isKeyDown("down");
+}
 // taille écran
 function getScale() {
   return Math.floor(Math.min(
@@ -628,6 +650,7 @@ let quete_boule_2 = false
 let quete_boule_fin = false
 let partie_foot = false
 let cadeau_1 = false
+let velo_garage = false
 
 scene("accueil",()=>{
     add([
@@ -859,7 +882,7 @@ scene("foret_1",()=>{
     }
 
 // mouvements
-    onKeyDown("right", () => {
+    function bouger_droite() {
         if(!velo_monte){
             ELIE.move(25, 0);
             if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
@@ -877,317 +900,217 @@ scene("foret_1",()=>{
                 ELIE.velo_utilise.play("roule");
             }
         }
-    });
 
-    onKeyRelease("right", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
         }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("down", () => {
-        if(!velo_monte){
-            ELIE.move(0, 25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_front");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, 40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("down", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_front")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("up", () => {
-        if(!velo_monte){
-            ELIE.move(0, -25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_behind");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, -40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("up", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_behind")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("left", () => {
-        if(!velo_monte){
-            ELIE.move(-25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_side");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(-40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("left", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("d", () => {
-        if(!velo_monte){
-            ELIE.move(25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_side");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("d", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("s", () => {
-        if(!velo_monte){
-            ELIE.move(0, 25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_front");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, 40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("s", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_front")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("w", () => {
-        if(!velo_monte){
-            ELIE.move(0, -25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_behind");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, -40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("w", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_behind")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("a", () => {
-        if(!velo_monte){
-            ELIE.move(-25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_side");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(-40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("a", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-// coup de pied
-    onKeyPress("space", () => {
-        if(!near){
-            if(ELIE.curAnim() === "walk_side"){
-                ELIE.play("kick_side")
-            }
-            if(ELIE.curAnim() === "walk_front"){
-                ELIE.play("kick_front")
-            }
-            if(ELIE.curAnim() === "walk_behind"){
-                ELIE.play("kick_behind")
-            }
-        }
-    })
-
-// sons de pas
-    pas.stop()
-
-    function isAnyMovementKeyDown() {
-        return isKeyDown("w") || isKeyDown("a") || isKeyDown("s") || isKeyDown("d") || isKeyDown("left") || isKeyDown("up") || isKeyDown("right") || isKeyDown("down");
     }
+    function bouger_stop_droite() {
+        if(!velo_monte){
+            ELIE.play("idle_side")
+        }
 
-    onKeyDown("w", () => {
-        if(!bool_pas){
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_bas() {
+        if(!velo_monte){
+            ELIE.move(0, 25);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = false;
+                ELIE.play("walk_front");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(0, 40);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = false;
+                ELIE.velo_utilise.flipX = true;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
             pas.play()
             bool_pas = true
         }
-    })
-
-    ELIE.onUpdate(() => {
-        if (!isAnyMovementKeyDown()) {
-            pas.stop()
-            bool_pas = false
+    }
+    function bouger_stop_bas(){
+        if(!velo_monte){
+            ELIE.play("idle_front")
         }
-    })
 
-    onKeyDown("a", () => {
-        if(!bool_pas){
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_haut(){
+        if(!velo_monte){
+            ELIE.move(0, -25);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = true;
+                ELIE.play("walk_behind");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(0, -40);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = true;
+                ELIE.velo_utilise.flipX = false;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
             pas.play()
             bool_pas = true
         }
-    })
+    }
+    function bouger_stop_haut(){
+        if(!velo_monte){
+            ELIE.play("idle_behind")
+        }
 
-    onKeyDown("s", () => {
-        if(!bool_pas){
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_gauche(){
+        if(!velo_monte){
+            ELIE.move(-25, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = false;
+                ELIE.play("walk_side");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(-40, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = false;
+                ELIE.velo_utilise.flipX = true;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
             pas.play()
             bool_pas = true
         }
-    })
-
-    onKeyDown("d", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
+    }
+    function bouger_stop_gauche(){
+        if(!velo_monte){
+            ELIE.play("idle_side")
         }
-    })
 
-    onKeyDown("left", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
         }
-    })
+    }
+    function coup_de_pied() {
+        onKeyPress("space", () => {
+            if(!near){
+                if(ELIE.curAnim() === "walk_side"){
+                    ELIE.play("kick_side")
+                }
+                if(ELIE.curAnim() === "walk_front"){
+                    ELIE.play("kick_front")
+                }
+                if(ELIE.curAnim() === "walk_behind"){
+                    ELIE.play("kick_behind")
+                }
+            }
 
-    onKeyDown("up", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
+            if(!nearball){
+                return
+            }
+
+            const dir = ballon_foot.pos.sub(ELIE.pos).unit()
+
+            const force = 100
+
+            ballon_foot.vel = dir.scale(force)
+
+            const son_ballon = play("son_ballon", {
+                volume: 1
+            })
+
+            tuto_ballon = true   
+
+            ballon_foot.play("bounce")
+
+        })
+    }     
 
     onKeyDown("right", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
+        bouger_droite()
+    });
+    onKeyRelease("right", ()=>{
+        bouger_stop_droite()
     })
-
     onKeyDown("down", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
+        bouger_bas()
+    });
+    onKeyRelease("down", ()=>{
+        bouger_stop_bas()
     })
+    onKeyDown("up", () => {
+        bouger_haut()
+    });
+    onKeyRelease("up", ()=>{
+        bouger_stop_haut()
+    })
+    onKeyDown("left", () => {
+        bouger_gauche()
+    });
+    onKeyRelease("left", ()=>{
+        bouger_stop_gauche()
+    })
+    onKeyDown("d", () => {
+        bouger_droite()
+    });
+    onKeyRelease("d", ()=>{
+        bouger_stop_droite()
+    })
+    onKeyDown("s", () => {
+        bouger_bas()
+    });
+    onKeyRelease("s", ()=>{
+        bouger_stop_bas()
+    })
+    onKeyDown("w", () => {
+        bouger_haut()
+    });
+    onKeyRelease("w", ()=>{
+        bouger_stop_haut()
+    })
+    onKeyDown("a", () => {
+        bouger_gauche()
+    });
+    onKeyRelease("a", ()=>{
+        bouger_stop_gauche()
+    })
+    onKeyPress("space", () => {
+        coup_de_pied() 
+    });
 
+    // son de marche et position z
     ELIE.onUpdate(() => {
         ELIE.z = ELIE.pos.y
 
-        if(velo_monte) {
+        if (!isAnyMovementKeyDown() && !navigator.getGamepads()[0]) {
+            pas.stop()
+            bool_pas = false
+        }
+
+        if(ELIE.velo_utilise) {
             ELIE.velo_utilise.pos.x = ELIE.pos.x
             ELIE.velo_utilise.pos.y = ELIE.pos.y + 11
             ELIE.velo_utilise.z = ELIE.pos.y + 11
@@ -1350,7 +1273,7 @@ scene("foret_1",()=>{
                 dialogueStage = 1
             }
 
-        // dialogues melo
+            // dialogues melo
             if (near && dialogueStage === 1 && currentSpeaker === MELO && !quete_boule_1) {
                 let num = getRandomInt(2) 
                 if (num === 0) {
@@ -2015,205 +1938,240 @@ scene("terrain_foot",()=>{
     }
 
 // mouvements
-    onKeyDown("right", () => {
-        ELIE.move(25, 0);
-        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-            ELIE.flipX = true;
-            ELIE.play("walk_side");
-        }
-    });
-
-    onKeyRelease("right", ()=>{
-        ELIE.play("idle_side")
-    })
-
-
-    onKeyDown("down", () => {
-        ELIE.move(0, 25);
-        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-            ELIE.play("walk_front");
-        }
-    });
-
-    onKeyRelease("down", ()=>{
-        ELIE.play("idle_front")
-    })
-
-    onKeyDown("up", () => {
-        ELIE.move(0, -25);
-        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-            ELIE.play("walk_behind");
-        }
-    });
-
-    onKeyRelease("up", ()=>{
-        ELIE.play("idle_behind")
-    })
-
-    onKeyDown("left", () => {
-        ELIE.move(-25, 0);
-        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-            ELIE.flipX = false;
-            ELIE.play("walk_side");
-        }
-    });
-
-    onKeyRelease("left", ()=>{
-        ELIE.play("idle_side")
-    })
-
-    onKeyDown("d", () => {
-        ELIE.move(25, 0);
-        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-            ELIE.flipX = true;
-            ELIE.play("walk_side");
-        }
-    });
-
-    onKeyRelease("d", ()=>{
-        ELIE.play("idle_side")
-    })
-
-
-    onKeyDown("s", () => {
-        ELIE.move(0, 25);
-        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-            ELIE.play("walk_front");
-        }
-    });
-
-    onKeyRelease("s", ()=>{
-        ELIE.play("idle_front")
-    })
-
-    onKeyDown("w", () => {
-        ELIE.move(0, -25);
-        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-            ELIE.play("walk_behind");
-        }
-    });
-
-    onKeyRelease("w", ()=>{
-        ELIE.play("idle_behind")
-    })
-
-    onKeyDown("a", () => {
-        ELIE.move(-25, 0);
-        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-            ELIE.flipX = false;
-            ELIE.play("walk_side");
-        }
-    });
-
-    onKeyRelease("a", ()=>{
-        ELIE.play("idle_side")
-    })
-
-// coup de pied
-    onKeyPress("space", () => {
-        if(!near){
-            if(ELIE.curAnim() === "walk_side"){
-                ELIE.play("kick_side")
-            }
-            if(ELIE.curAnim() === "walk_front"){
-                ELIE.play("kick_front")
-            }
-            if(ELIE.curAnim() === "walk_behind"){
-                ELIE.play("kick_behind")
+    function bouger_droite() {
+        if(!velo_monte){
+            ELIE.move(25, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = true;
+                ELIE.play("walk_side");
             }
         }
 
-        if(!nearball){
-            return
+        if(velo_monte){
+            ELIE.move(40, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = true;
+                ELIE.velo_utilise.flipX = false;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
         }
 
-        const dir = ballon_foot.pos.sub(ELIE.pos).unit()
-
-        const force = 100
-
-        ballon_foot.applyImpulse(dir.scale(force))
-
-        ballon_foot.play("bounce")
-
-        const son_ballon = play("son_ballon", {
-            volume: 1
-        })
-
-        tuto_ballon = true    
-    })
-
-// sons de pas
-    pas.stop()
-
-    function isAnyMovementKeyDown() {
-        return isKeyDown("w") || isKeyDown("a") || isKeyDown("s") || isKeyDown("d") || isKeyDown("left") || isKeyDown("up") || isKeyDown("right") || isKeyDown("down");
-    }
-
-    onKeyDown("w", () => {
-        if(!bool_pas){
+        if(!bool_pas && !velo_monte){
             pas.play()
             bool_pas = true
         }
-    })
+    }
+    function bouger_stop_droite() {
+        if(!velo_monte){
+            ELIE.play("idle_side")
+        }
 
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_bas() {
+        if(!velo_monte){
+            ELIE.move(0, 25);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = false;
+                ELIE.play("walk_front");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(0, 40);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = false;
+                ELIE.velo_utilise.flipX = true;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
+        }
+    }
+    function bouger_stop_bas(){
+        if(!velo_monte){
+            ELIE.play("idle_front")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_haut(){
+        if(!velo_monte){
+            ELIE.move(0, -25);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = true;
+                ELIE.play("walk_behind");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(0, -40);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = true;
+                ELIE.velo_utilise.flipX = false;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
+        }
+    }
+    function bouger_stop_haut(){
+        if(!velo_monte){
+            ELIE.play("idle_behind")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_gauche(){
+        if(!velo_monte){
+            ELIE.move(-25, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = false;
+                ELIE.play("walk_side");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(-40, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = false;
+                ELIE.velo_utilise.flipX = true;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
+        }
+    }
+    function bouger_stop_gauche(){
+        if(!velo_monte){
+            ELIE.play("idle_side")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function coup_de_pied() {
+        onKeyPress("space", () => {
+            if(!near){
+                if(ELIE.curAnim() === "walk_side"){
+                    ELIE.play("kick_side")
+                }
+                if(ELIE.curAnim() === "walk_front"){
+                    ELIE.play("kick_front")
+                }
+                if(ELIE.curAnim() === "walk_behind"){
+                    ELIE.play("kick_behind")
+                }
+            }
+
+            if(!nearball){
+                return
+            }
+
+            const dir = ballon_foot.pos.sub(ELIE.pos).unit()
+
+            const force = 100
+
+            ballon_foot.vel = dir.scale(force)
+
+            const son_ballon = play("son_ballon", {
+                volume: 1
+            })
+
+            tuto_ballon = true   
+
+            ballon_foot.play("bounce")
+
+        })
+    }     
+
+    onKeyDown("right", () => {
+        bouger_droite()
+    });
+    onKeyRelease("right", ()=>{
+        bouger_stop_droite()
+    })
+    onKeyDown("down", () => {
+        bouger_bas()
+    });
+    onKeyRelease("down", ()=>{
+        bouger_stop_bas()
+    })
+    onKeyDown("up", () => {
+        bouger_haut()
+    });
+    onKeyRelease("up", ()=>{
+        bouger_stop_haut()
+    })
+    onKeyDown("left", () => {
+        bouger_gauche()
+    });
+    onKeyRelease("left", ()=>{
+        bouger_stop_gauche()
+    })
+    onKeyDown("d", () => {
+        bouger_droite()
+    });
+    onKeyRelease("d", ()=>{
+        bouger_stop_droite()
+    })
+    onKeyDown("s", () => {
+        bouger_bas()
+    });
+    onKeyRelease("s", ()=>{
+        bouger_stop_bas()
+    })
+    onKeyDown("w", () => {
+        bouger_haut()
+    });
+    onKeyRelease("w", ()=>{
+        bouger_stop_haut()
+    })
+    onKeyDown("a", () => {
+        bouger_gauche()
+    });
+    onKeyRelease("a", ()=>{
+        bouger_stop_gauche()
+    })
+    onKeyPress("space", () => {
+        coup_de_pied() 
+    });
+
+    // son de marche et position z
     ELIE.onUpdate(() => {
-        if (!isAnyMovementKeyDown()) {
+        ELIE.z = ELIE.pos.y
+
+        if (!isAnyMovementKeyDown() && !navigator.getGamepads()[0]) {
             pas.stop()
             bool_pas = false
         }
-    })
 
-    onKeyDown("a", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
+        if(ELIE.velo_utilise) {
+            ELIE.velo_utilise.pos.x = ELIE.pos.x
+            ELIE.velo_utilise.pos.y = ELIE.pos.y + 11
+            ELIE.velo_utilise.z = ELIE.pos.y + 11
+            ELIE.z = ELIE.pos.y + 11
         }
-    })
-
-    onKeyDown("s", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("d", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("left", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("up", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("right", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("down", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    ELIE.onUpdate(() => {
-    ELIE.z = ELIE.pos.y
     })
 
 // INITIALISATION DECORS
@@ -2544,207 +2502,240 @@ scene("partie_foot",()=>{
     ELIE.play("idle_side")
 
 // mouvements
-    onKeyDown("right", () => {
-        ELIE.move(25, 0);
-        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-            ELIE.flipX = true;
-            ELIE.play("walk_side");
-        }
-    });
-
-    onKeyRelease("right", ()=>{
-        ELIE.play("idle_side")
-    })
-
-
-    onKeyDown("down", () => {
-        ELIE.move(0, 25);
-        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-            ELIE.play("walk_front");
-        }
-    });
-
-    onKeyRelease("down", ()=>{
-        ELIE.play("idle_front")
-    })
-
-    onKeyDown("up", () => {
-        ELIE.move(0, -25);
-        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-            ELIE.play("walk_behind");
-        }
-    });
-
-    onKeyRelease("up", ()=>{
-        ELIE.play("idle_behind")
-    })
-
-    onKeyDown("left", () => {
-        ELIE.move(-25, 0);
-        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-            ELIE.flipX = false;
-            ELIE.play("walk_side");
-        }
-    });
-
-    onKeyRelease("left", ()=>{
-        ELIE.play("idle_side")
-    })
-
-    onKeyDown("d", () => {
-        ELIE.move(25, 0);
-        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-            ELIE.flipX = true;
-            ELIE.play("walk_side");
-        }
-    });
-
-    onKeyRelease("d", ()=>{
-        ELIE.play("idle_side")
-    })
-
-
-    onKeyDown("s", () => {
-        ELIE.move(0, 25);
-        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-            ELIE.play("walk_front");
-        }
-    });
-
-    onKeyRelease("s", ()=>{
-        ELIE.play("idle_front")
-    })
-
-    onKeyDown("w", () => {
-        ELIE.move(0, -25);
-        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-            ELIE.play("walk_behind");
-        }
-    });
-
-    onKeyRelease("w", ()=>{
-        ELIE.play("idle_behind")
-    })
-
-    onKeyDown("a", () => {
-        ELIE.move(-25, 0);
-        if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-            ELIE.flipX = false;
-            ELIE.play("walk_side");
-        }
-    });
-
-    onKeyRelease("a", ()=>{
-        ELIE.play("idle_side")
-    })
-
-// coup de pied
-    onKeyPress("space", () => {
-        if(!near){
-            if(ELIE.curAnim() === "walk_side"){
-                ELIE.play("kick_side")
-            }
-            if(ELIE.curAnim() === "walk_front"){
-                ELIE.play("kick_front")
-            }
-            if(ELIE.curAnim() === "walk_behind"){
-                ELIE.play("kick_behind")
+    function bouger_droite() {
+        if(!velo_monte){
+            ELIE.move(25, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = true;
+                ELIE.play("walk_side");
             }
         }
 
-        if(!nearball){
-            return
+        if(velo_monte){
+            ELIE.move(40, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = true;
+                ELIE.velo_utilise.flipX = false;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
         }
 
-        const dir = ballon_foot.pos.sub(ELIE.pos).unit()
-
-        const force = 100
-
-        ballon_foot.vel = dir.scale(force)
-
-        const son_ballon = play("son_ballon", {
-            volume: 1
-        })
-
-        tuto_ballon = true   
-
-        ballon_foot.play("bounce")
-
-        tuto_ballon = true    
-    })
-
-// sons de pas
-    pas.stop()
-
-    function isAnyMovementKeyDown() {
-        return isKeyDown("w") || isKeyDown("a") || isKeyDown("s") || isKeyDown("d") || isKeyDown("left") || isKeyDown("up") || isKeyDown("right") || isKeyDown("down");
-    }
-
-    onKeyDown("w", () => {
-        if(!bool_pas){
+        if(!bool_pas && !velo_monte){
             pas.play()
             bool_pas = true
         }
-    })
+    }
+    function bouger_stop_droite() {
+        if(!velo_monte){
+            ELIE.play("idle_side")
+        }
 
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_bas() {
+        if(!velo_monte){
+            ELIE.move(0, 25);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = false;
+                ELIE.play("walk_front");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(0, 40);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = false;
+                ELIE.velo_utilise.flipX = true;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
+        }
+    }
+    function bouger_stop_bas(){
+        if(!velo_monte){
+            ELIE.play("idle_front")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_haut(){
+        if(!velo_monte){
+            ELIE.move(0, -25);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = true;
+                ELIE.play("walk_behind");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(0, -40);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = true;
+                ELIE.velo_utilise.flipX = false;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
+        }
+    }
+    function bouger_stop_haut(){
+        if(!velo_monte){
+            ELIE.play("idle_behind")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_gauche(){
+        if(!velo_monte){
+            ELIE.move(-25, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = false;
+                ELIE.play("walk_side");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(-40, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = false;
+                ELIE.velo_utilise.flipX = true;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
+        }
+    }
+    function bouger_stop_gauche(){
+        if(!velo_monte){
+            ELIE.play("idle_side")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function coup_de_pied() {
+        onKeyPress("space", () => {
+            if(!near){
+                if(ELIE.curAnim() === "walk_side"){
+                    ELIE.play("kick_side")
+                }
+                if(ELIE.curAnim() === "walk_front"){
+                    ELIE.play("kick_front")
+                }
+                if(ELIE.curAnim() === "walk_behind"){
+                    ELIE.play("kick_behind")
+                }
+            }
+
+            if(!nearball){
+                return
+            }
+
+            const dir = ballon_foot.pos.sub(ELIE.pos).unit()
+
+            const force = 100
+
+            ballon_foot.vel = dir.scale(force)
+
+            const son_ballon = play("son_ballon", {
+                volume: 1
+            })
+
+            tuto_ballon = true   
+
+            ballon_foot.play("bounce")
+
+        })
+    }     
+
+    onKeyDown("right", () => {
+        bouger_droite()
+    });
+    onKeyRelease("right", ()=>{
+        bouger_stop_droite()
+    })
+    onKeyDown("down", () => {
+        bouger_bas()
+    });
+    onKeyRelease("down", ()=>{
+        bouger_stop_bas()
+    })
+    onKeyDown("up", () => {
+        bouger_haut()
+    });
+    onKeyRelease("up", ()=>{
+        bouger_stop_haut()
+    })
+    onKeyDown("left", () => {
+        bouger_gauche()
+    });
+    onKeyRelease("left", ()=>{
+        bouger_stop_gauche()
+    })
+    onKeyDown("d", () => {
+        bouger_droite()
+    });
+    onKeyRelease("d", ()=>{
+        bouger_stop_droite()
+    })
+    onKeyDown("s", () => {
+        bouger_bas()
+    });
+    onKeyRelease("s", ()=>{
+        bouger_stop_bas()
+    })
+    onKeyDown("w", () => {
+        bouger_haut()
+    });
+    onKeyRelease("w", ()=>{
+        bouger_stop_haut()
+    })
+    onKeyDown("a", () => {
+        bouger_gauche()
+    });
+    onKeyRelease("a", ()=>{
+        bouger_stop_gauche()
+    })
+    onKeyPress("space", () => {
+        coup_de_pied() 
+    });
+
+    // son de marche et position z
     ELIE.onUpdate(() => {
-        if (!isAnyMovementKeyDown()) {
+        ELIE.z = ELIE.pos.y
+
+        if (!isAnyMovementKeyDown() && !navigator.getGamepads()[0]) {
             pas.stop()
             bool_pas = false
         }
-    })
 
-    onKeyDown("a", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
+        if(ELIE.velo_utilise) {
+            ELIE.velo_utilise.pos.x = ELIE.pos.x
+            ELIE.velo_utilise.pos.y = ELIE.pos.y + 11
+            ELIE.velo_utilise.z = ELIE.pos.y + 11
+            ELIE.z = ELIE.pos.y + 11
         }
-    })
-
-    onKeyDown("s", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("d", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("left", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("up", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("right", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("down", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    ELIE.onUpdate(() => {
-    ELIE.z = ELIE.pos.y
     })
 
 // INITIALISATION DECORS
@@ -3229,7 +3220,7 @@ scene("ville_1",()=>{
     }
     
 // mouvements
-    onKeyDown("right", () => {
+    function bouger_droite() {
         if(!velo_monte){
             ELIE.move(25, 0);
             if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
@@ -3247,329 +3238,215 @@ scene("ville_1",()=>{
                 ELIE.velo_utilise.play("roule");
             }
         }
-    });
 
-    onKeyRelease("right", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("down", () => {
-        if(!velo_monte){
-            ELIE.move(0, 25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_front");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, 40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("down", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_front")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("up", () => {
-        if(!velo_monte){
-            ELIE.move(0, -25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_behind");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, -40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("up", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_behind")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("left", () => {
-        if(!velo_monte){
-            ELIE.move(-25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_side");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(-40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("left", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("d", () => {
-        if(!velo_monte){
-            ELIE.move(25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_side");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("d", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("s", () => {
-        if(!velo_monte){
-            ELIE.move(0, 25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_front");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, 40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("s", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_front")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("w", () => {
-        if(!velo_monte){
-            ELIE.move(0, -25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_behind");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, -40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("w", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_behind")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("a", () => {
-        if(!velo_monte){
-            ELIE.move(-25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_side");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(-40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("a", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-// coup de pied
-    onKeyPress("space", () => {
-        if(!near){
-            if(ELIE.curAnim() === "walk_side"){
-                ELIE.play("kick_side")
-            }
-            if(ELIE.curAnim() === "walk_front"){
-                ELIE.play("kick_front")
-            }
-            if(ELIE.curAnim() === "walk_behind"){
-                ELIE.play("kick_behind")
-            }
-        }
-
-        if(!nearball){
-            return
-        }
-
-        const dir = ballon_foot.pos.sub(ELIE.pos).unit()
-
-        const force = 100
-
-        ballon_foot.applyImpulse(dir.scale(force))
-
-        ballon_foot.play("bounce")
-
-        tuto_ballon = true    
-    })
-
-// sons de pas
-    pas.stop()
-
-    function isAnyMovementKeyDown() {
-        return isKeyDown("w") || isKeyDown("a") || isKeyDown("s") || isKeyDown("d") || isKeyDown("left") || isKeyDown("up") || isKeyDown("right") || isKeyDown("down");
-    }
-
-    onKeyDown("w", () => {
-        if(!bool_pas){
+        if(!bool_pas && !velo_monte){
             pas.play()
             bool_pas = true
         }
-    })
+    }
+    function bouger_stop_droite() {
+        if(!velo_monte){
+            ELIE.play("idle_side")
+        }
 
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_bas() {
+        if(!velo_monte){
+            ELIE.move(0, 25);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = false;
+                ELIE.play("walk_front");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(0, 40);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = false;
+                ELIE.velo_utilise.flipX = true;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
+        }
+    }
+    function bouger_stop_bas(){
+        if(!velo_monte){
+            ELIE.play("idle_front")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_haut(){
+        if(!velo_monte){
+            ELIE.move(0, -25);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = true;
+                ELIE.play("walk_behind");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(0, -40);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = true;
+                ELIE.velo_utilise.flipX = false;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
+        }
+    }
+    function bouger_stop_haut(){
+        if(!velo_monte){
+            ELIE.play("idle_behind")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_gauche(){
+        if(!velo_monte){
+            ELIE.move(-25, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = false;
+                ELIE.play("walk_side");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(-40, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = false;
+                ELIE.velo_utilise.flipX = true;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
+        }
+    }
+    function bouger_stop_gauche(){
+        if(!velo_monte){
+            ELIE.play("idle_side")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function coup_de_pied() {
+        onKeyPress("space", () => {
+            if(!near){
+                if(ELIE.curAnim() === "walk_side"){
+                    ELIE.play("kick_side")
+                }
+                if(ELIE.curAnim() === "walk_front"){
+                    ELIE.play("kick_front")
+                }
+                if(ELIE.curAnim() === "walk_behind"){
+                    ELIE.play("kick_behind")
+                }
+            }
+
+            if(!nearball){
+                return
+            }
+
+            const dir = ballon_foot.pos.sub(ELIE.pos).unit()
+
+            const force = 100
+
+            ballon_foot.vel = dir.scale(force)
+
+            const son_ballon = play("son_ballon", {
+                volume: 1
+            })
+
+            tuto_ballon = true   
+
+            ballon_foot.play("bounce")
+
+        })
+    }     
+
+    onKeyDown("right", () => {
+        bouger_droite()
+    });
+    onKeyRelease("right", ()=>{
+        bouger_stop_droite()
+    })
+    onKeyDown("down", () => {
+        bouger_bas()
+    });
+    onKeyRelease("down", ()=>{
+        bouger_stop_bas()
+    })
+    onKeyDown("up", () => {
+        bouger_haut()
+    });
+    onKeyRelease("up", ()=>{
+        bouger_stop_haut()
+    })
+    onKeyDown("left", () => {
+        bouger_gauche()
+    });
+    onKeyRelease("left", ()=>{
+        bouger_stop_gauche()
+    })
+    onKeyDown("d", () => {
+        bouger_droite()
+    });
+    onKeyRelease("d", ()=>{
+        bouger_stop_droite()
+    })
+    onKeyDown("s", () => {
+        bouger_bas()
+    });
+    onKeyRelease("s", ()=>{
+        bouger_stop_bas()
+    })
+    onKeyDown("w", () => {
+        bouger_haut()
+    });
+    onKeyRelease("w", ()=>{
+        bouger_stop_haut()
+    })
+    onKeyDown("a", () => {
+        bouger_gauche()
+    });
+    onKeyRelease("a", ()=>{
+        bouger_stop_gauche()
+    })
+    onKeyPress("space", () => {
+        coup_de_pied() 
+    });
+
+    // son de marche et position z
     ELIE.onUpdate(() => {
-        if (!isAnyMovementKeyDown()) {
+        ELIE.z = ELIE.pos.y
+
+        if (!isAnyMovementKeyDown() && !navigator.getGamepads()[0]) {
             pas.stop()
             bool_pas = false
         }
-    })
-
-    onKeyDown("a", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("s", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("d", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("left", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("up", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("right", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("down", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    ELIE.onUpdate(() => {
-        ELIE.z = ELIE.pos.y
 
         if(ELIE.velo_utilise) {
             ELIE.velo_utilise.pos.x = ELIE.pos.x
@@ -3577,22 +3454,6 @@ scene("ville_1",()=>{
             ELIE.velo_utilise.z = ELIE.pos.y + 11
             ELIE.z = ELIE.pos.y + 11
         }
-    })
-
-// COLLISION
-    ELIE.onCollide("velo", (velo) => {
-        if (!near) {
-            ftc_text_near(ELIE, "\\[E\\] intéragir", velo, "velo")
-            dialogueStage = 1
-        }
-    })
-
-    ELIE.onCollideEnd("velo", () => {
-        destroyCurrentMessages()
-        near = false
-        dialogueStage = 0
-        currentSpeaker = null
-        currentTag = null
     })
 
 // INTERACTION
@@ -3734,6 +3595,26 @@ scene("ville_1",()=>{
         "prison"
     ])
     prison.z = prison.pos.y - 13
+
+    // velo
+    if(!velo_monte && velo_location === "ville"){
+        velo = add([
+            pos(35,45),
+            sprite('velo'),
+            body({ isStatic: true}),
+            anchor("bot"),
+            area({
+                shape: new Rect(vec2(0, 0), 20, 3)
+            }),
+            'velo'
+        ])
+        if(position_velo_x){
+            velo.pos.x = position_velo_x
+            velo.pos.y = position_velo_y
+        }
+        velo.z = velo.pos.y
+        velo_location = "ville"
+    }
     
 
 // COLLISIONS
@@ -3795,9 +3676,25 @@ scene("garage",()=>{
     ]);
 
     ELIE.play("idle_behind")
+
+    if(velo_monte){
+        velo_location = "garage"
+        ELIE.play("velo")
+        ELIE.velo_utilise = add([
+            sprite("velo"),
+            pos(ELIE.pos.x, ELIE.pos.y + 11),
+            body(),
+            anchor("bot"),
+            area({
+                shape: new Rect(vec2(0, 0), 20, 10)
+            }),
+            "velo"
+        ]);
+        velo_monte = true
+    }
  
 // mouvements
-    onKeyDown("right", () => {
+    function bouger_droite() {
         if(!velo_monte){
             ELIE.move(25, 0);
             if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
@@ -3815,335 +3712,252 @@ scene("garage",()=>{
                 ELIE.velo_utilise.play("roule");
             }
         }
-    });
 
-    onKeyRelease("right", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("down", () => {
-        if(!velo_monte){
-            ELIE.move(0, 25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_front");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, 40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("down", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_front")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("up", () => {
-        if(!velo_monte){
-            ELIE.move(0, -25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_behind");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, -40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("up", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_behind")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("left", () => {
-        if(!velo_monte){
-            ELIE.move(-25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_side");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(-40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("left", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("d", () => {
-        if(!velo_monte){
-            ELIE.move(25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_side");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("d", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("s", () => {
-        if(!velo_monte){
-            ELIE.move(0, 25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_front");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, 40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("s", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_front")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("w", () => {
-        if(!velo_monte){
-            ELIE.move(0, -25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_behind");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, -40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("w", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_behind")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("a", () => {
-        if(!velo_monte){
-            ELIE.move(-25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_side");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(-40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("a", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-// coup de pied
-    onKeyPress("space", () => {
-        if(!near){
-            if(ELIE.curAnim() === "walk_side"){
-                ELIE.play("kick_side")
-            }
-            if(ELIE.curAnim() === "walk_front"){
-                ELIE.play("kick_front")
-            }
-            if(ELIE.curAnim() === "walk_behind"){
-                ELIE.play("kick_behind")
-            }
-        }
-
-        if(!nearball){
-            return
-        }
-
-        const dir = ballon_foot.pos.sub(ELIE.pos).unit()
-
-        const force = 100
-
-        ballon_foot.applyImpulse(dir.scale(force))
-
-        ballon_foot.play("bounce")
-
-        tuto_ballon = true    
-    })
-
-// sons de pas
-    pas.stop()
-
-    function isAnyMovementKeyDown() {
-        return isKeyDown("w") || isKeyDown("a") || isKeyDown("s") || isKeyDown("d") || isKeyDown("left") || isKeyDown("up") || isKeyDown("right") || isKeyDown("down");
-    }
-
-    onKeyDown("w", () => {
-        if(!bool_pas){
+        if(!bool_pas && !velo_monte){
             pas.play()
             bool_pas = true
         }
-    })
+    }
+    function bouger_stop_droite() {
+        if(!velo_monte){
+            ELIE.play("idle_side")
+        }
 
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_bas() {
+        if(!velo_monte){
+            ELIE.move(0, 25);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = false;
+                ELIE.play("walk_front");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(0, 40);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = false;
+                ELIE.velo_utilise.flipX = true;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
+        }
+    }
+    function bouger_stop_bas(){
+        if(!velo_monte){
+            ELIE.play("idle_front")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_haut(){
+        if(!velo_monte){
+            ELIE.move(0, -25);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = true;
+                ELIE.play("walk_behind");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(0, -40);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = true;
+                ELIE.velo_utilise.flipX = false;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
+        }
+    }
+    function bouger_stop_haut(){
+        if(!velo_monte){
+            ELIE.play("idle_behind")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_gauche(){
+        if(!velo_monte){
+            ELIE.move(-25, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = false;
+                ELIE.play("walk_side");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(-40, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = false;
+                ELIE.velo_utilise.flipX = true;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
+        }
+    }
+    function bouger_stop_gauche(){
+        if(!velo_monte){
+            ELIE.play("idle_side")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function coup_de_pied() {
+        onKeyPress("space", () => {
+            if(!near){
+                if(ELIE.curAnim() === "walk_side"){
+                    ELIE.play("kick_side")
+                }
+                if(ELIE.curAnim() === "walk_front"){
+                    ELIE.play("kick_front")
+                }
+                if(ELIE.curAnim() === "walk_behind"){
+                    ELIE.play("kick_behind")
+                }
+            }
+
+            if(!nearball){
+                return
+            }
+
+            const dir = ballon_foot.pos.sub(ELIE.pos).unit()
+
+            const force = 100
+
+            ballon_foot.vel = dir.scale(force)
+
+            const son_ballon = play("son_ballon", {
+                volume: 1
+            })
+
+            tuto_ballon = true   
+
+            ballon_foot.play("bounce")
+
+        })
+    }     
+
+    onKeyDown("right", () => {
+        bouger_droite()
+    });
+    onKeyRelease("right", ()=>{
+        bouger_stop_droite()
+    })
+    onKeyDown("down", () => {
+        bouger_bas()
+    });
+    onKeyRelease("down", ()=>{
+        bouger_stop_bas()
+    })
+    onKeyDown("up", () => {
+        bouger_haut()
+    });
+    onKeyRelease("up", ()=>{
+        bouger_stop_haut()
+    })
+    onKeyDown("left", () => {
+        bouger_gauche()
+    });
+    onKeyRelease("left", ()=>{
+        bouger_stop_gauche()
+    })
+    onKeyDown("d", () => {
+        bouger_droite()
+    });
+    onKeyRelease("d", ()=>{
+        bouger_stop_droite()
+    })
+    onKeyDown("s", () => {
+        bouger_bas()
+    });
+    onKeyRelease("s", ()=>{
+        bouger_stop_bas()
+    })
+    onKeyDown("w", () => {
+        bouger_haut()
+    });
+    onKeyRelease("w", ()=>{
+        bouger_stop_haut()
+    })
+    onKeyDown("a", () => {
+        bouger_gauche()
+    });
+    onKeyRelease("a", ()=>{
+        bouger_stop_gauche()
+    })
+    onKeyPress("space", () => {
+        coup_de_pied() 
+    });
+
+    // son de marche et position z
     ELIE.onUpdate(() => {
-        if (!isAnyMovementKeyDown()) {
+        ELIE.z = ELIE.pos.y
+
+        if (!isAnyMovementKeyDown() && !navigator.getGamepads()[0]) {
             pas.stop()
             bool_pas = false
         }
-    })
 
-    onKeyDown("a", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
+        if(ELIE.velo_utilise) {
+            ELIE.velo_utilise.pos.x = ELIE.pos.x
+            ELIE.velo_utilise.pos.y = ELIE.pos.y + 11
+            ELIE.velo_utilise.z = ELIE.pos.y + 11
+            ELIE.z = ELIE.pos.y + 11
         }
     })
-
-    onKeyDown("s", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("d", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("left", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("up", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("right", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("down", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    ELIE.onUpdate(() => {
-        ELIE.z = ELIE.pos.y
-    })
-
 
 // INTERACTION
     onKeyPress("e", () => {
+        if (near && dialogueStage === 1 && currentSpeaker === PAPA && !velo_garage) {
+            let num = getRandomInt(3) 
+            if (num === 0) {
+                ftc_text_near(ELIE, `Salut Tim !\nT'as quelque chose à me dire ?`, currentSpeaker, currentTag)
+            }
 
+            if (num === 1) {
+                ftc_text_near(ELIE, "Tu es libre jeudi ?\nJ'aurais besoin d'un coup de main...", currentSpeaker, currentTag)
+            }
+
+            if (num === 2) {
+                ftc_text_near(ELIE, "Tu pourrais rendre visite à ton\nfrère de temps en temps,\nça lui ferait plaisir.", currentSpeaker, currentTag)
+            }
+            return
+        }
+        
+        if (near && dialogueStage === 1 && currentSpeaker === PAPA && velo_garage) {
+            ftc_text_near(ELIE, "T'as aidé ma soeur. C'est cool.", currentSpeaker, currentTag)
+            dialogueStage = 2
+            return
+        }
+
+        if (near && dialogueStage === 2 && currentSpeaker === PAPA && velo_garage) {
+            ftc_text_near(ELIE, "\\[E\\] intéragir", PAPA, "papa")
+            dialogueStage = 1
+        }
     })
 
 // INITIALISATION DECORS
@@ -4197,6 +4011,7 @@ scene("garage",()=>{
         opacity(0)
     ]);
 
+    // objets
     const meuble_1 = add([
         sprite("garage_meuble_1"),
         pos(7,1),
@@ -4251,7 +4066,28 @@ scene("garage",()=>{
         pos(95,89),
         area(),
         body()
-    ]) 
+    ])
+
+    // personnages
+    const PAPA = add([
+        sprite('papa'),
+        pos(50,42),
+        anchor("bot"),
+        area({
+            shape: new Rect(vec2(0, 0), 6, 3)
+        }),
+        body({ isStatic: true }),
+        'papa'
+    ]);
+    PAPA.z = PAPA.pos.y
+    PAPA.play("idle_front")
+    PAPA.onUpdate(() => {
+        if(PAPA.pos.x > ELIE.pos.x){
+            PAPA.flipX = true
+        } else {
+            PAPA.flipX = false
+        }
+    })
 
 // COLLISIONS
     // changement zone
@@ -4259,6 +4095,22 @@ scene("garage",()=>{
         pas.stop(),
         zone_arrivee = "garage",
         go("ville_1")
+    })
+
+    // interactions
+    ELIE.onCollide("papa", (papa) => {
+        if (!near) {
+            ftc_text_near(ELIE, "\\[E\\] intéragir", papa, "papa")
+            dialogueStage = 1
+        }
+    })
+
+    ELIE.onCollideEnd("papa", () => {
+        destroyCurrentMessages()
+        near = false
+        dialogueStage = 0
+        currentSpeaker = null
+        currentTag = null
     })
 })
 
@@ -4289,7 +4141,7 @@ scene("hopital",()=>{
         ELIE.flipX = false
     }
 // mouvements
-    onKeyDown("right", () => {
+    function bouger_droite() {
         if(!velo_monte){
             ELIE.move(25, 0);
             if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
@@ -4307,331 +4159,223 @@ scene("hopital",()=>{
                 ELIE.velo_utilise.play("roule");
             }
         }
-    });
 
-    onKeyRelease("right", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("down", () => {
-        if(!velo_monte){
-            ELIE.move(0, 25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_front");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, 40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("down", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_front")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("up", () => {
-        if(!velo_monte){
-            ELIE.move(0, -25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_behind");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, -40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("up", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_behind")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("left", () => {
-        if(!velo_monte){
-            ELIE.move(-25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_side");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(-40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("left", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("d", () => {
-        if(!velo_monte){
-            ELIE.move(25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_side");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("d", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("s", () => {
-        if(!velo_monte){
-            ELIE.move(0, 25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_front");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, 40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("s", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_front")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("w", () => {
-        if(!velo_monte){
-            ELIE.move(0, -25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_behind");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, -40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("w", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_behind")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("a", () => {
-        if(!velo_monte){
-            ELIE.move(-25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_side");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(-40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("a", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-// coup de pied
-    onKeyPress("space", () => {
-        if(!near){
-            if(ELIE.curAnim() === "walk_side"){
-                ELIE.play("kick_side")
-            }
-            if(ELIE.curAnim() === "walk_front"){
-                ELIE.play("kick_front")
-            }
-            if(ELIE.curAnim() === "walk_behind"){
-                ELIE.play("kick_behind")
-            }
-        }
-
-        if(!nearball){
-            return
-        }
-
-        const dir = ballon_foot.pos.sub(ELIE.pos).unit()
-
-        const force = 100
-
-        ballon_foot.applyImpulse(dir.scale(force))
-
-        ballon_foot.play("bounce")
-
-        tuto_ballon = true    
-    })
-
-// sons de pas
-    pas.stop()
-
-    function isAnyMovementKeyDown() {
-        return isKeyDown("w") || isKeyDown("a") || isKeyDown("s") || isKeyDown("d") || isKeyDown("left") || isKeyDown("up") || isKeyDown("right") || isKeyDown("down");
-    }
-
-    onKeyDown("w", () => {
-        if(!bool_pas){
+        if(!bool_pas && !velo_monte){
             pas.play()
             bool_pas = true
         }
-    })
+    }
+    function bouger_stop_droite() {
+        if(!velo_monte){
+            ELIE.play("idle_side")
+        }
 
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_bas() {
+        if(!velo_monte){
+            ELIE.move(0, 25);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = false;
+                ELIE.play("walk_front");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(0, 40);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = false;
+                ELIE.velo_utilise.flipX = true;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
+        }
+    }
+    function bouger_stop_bas(){
+        if(!velo_monte){
+            ELIE.play("idle_front")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_haut(){
+        if(!velo_monte){
+            ELIE.move(0, -25);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = true;
+                ELIE.play("walk_behind");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(0, -40);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = true;
+                ELIE.velo_utilise.flipX = false;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
+        }
+    }
+    function bouger_stop_haut(){
+        if(!velo_monte){
+            ELIE.play("idle_behind")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_gauche(){
+        if(!velo_monte){
+            ELIE.move(-25, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = false;
+                ELIE.play("walk_side");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(-40, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = false;
+                ELIE.velo_utilise.flipX = true;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
+        }
+    }
+    function bouger_stop_gauche(){
+        if(!velo_monte){
+            ELIE.play("idle_side")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function coup_de_pied() {
+        onKeyPress("space", () => {
+            if(!near){
+                if(ELIE.curAnim() === "walk_side"){
+                    ELIE.play("kick_side")
+                }
+                if(ELIE.curAnim() === "walk_front"){
+                    ELIE.play("kick_front")
+                }
+                if(ELIE.curAnim() === "walk_behind"){
+                    ELIE.play("kick_behind")
+                }
+            }
+
+            if(!nearball){
+                return
+            }
+
+            const dir = ballon_foot.pos.sub(ELIE.pos).unit()
+
+            const force = 100
+
+            ballon_foot.vel = dir.scale(force)
+
+            const son_ballon = play("son_ballon", {
+                volume: 1
+            })
+
+            tuto_ballon = true   
+
+            ballon_foot.play("bounce")
+
+        })
+    }     
+
+    onKeyDown("right", () => {
+        bouger_droite()
+    });
+    onKeyRelease("right", ()=>{
+        bouger_stop_droite()
+    })
+    onKeyDown("down", () => {
+        bouger_bas()
+    });
+    onKeyRelease("down", ()=>{
+        bouger_stop_bas()
+    })
+    onKeyDown("up", () => {
+        bouger_haut()
+    });
+    onKeyRelease("up", ()=>{
+        bouger_stop_haut()
+    })
+    onKeyDown("left", () => {
+        bouger_gauche()
+    });
+    onKeyRelease("left", ()=>{
+        bouger_stop_gauche()
+    })
+    onKeyDown("d", () => {
+        bouger_droite()
+    });
+    onKeyRelease("d", ()=>{
+        bouger_stop_droite()
+    })
+    onKeyDown("s", () => {
+        bouger_bas()
+    });
+    onKeyRelease("s", ()=>{
+        bouger_stop_bas()
+    })
+    onKeyDown("w", () => {
+        bouger_haut()
+    });
+    onKeyRelease("w", ()=>{
+        bouger_stop_haut()
+    })
+    onKeyDown("a", () => {
+        bouger_gauche()
+    });
+    onKeyRelease("a", ()=>{
+        bouger_stop_gauche()
+    })
+    onKeyPress("space", () => {
+        coup_de_pied() 
+    });
+
+    // son de marche et position z
     ELIE.onUpdate(() => {
-        if (!isAnyMovementKeyDown()) {
+        ELIE.z = ELIE.pos.y
+
+        if (!isAnyMovementKeyDown() && !navigator.getGamepads()[0]) {
             pas.stop()
             bool_pas = false
         }
-    })
 
-    onKeyDown("a", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
+        if(ELIE.velo_utilise) {
+            ELIE.velo_utilise.pos.x = ELIE.pos.x
+            ELIE.velo_utilise.pos.y = ELIE.pos.y + 11
+            ELIE.velo_utilise.z = ELIE.pos.y + 11
+            ELIE.z = ELIE.pos.y + 11
         }
     })
-
-    onKeyDown("s", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("d", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("left", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("up", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("right", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("down", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    ELIE.onUpdate(() => {
-        ELIE.z = ELIE.pos.y
-    })
-
 
 // INTERACTION
     onKeyPress("e", () => {
@@ -4756,7 +4500,7 @@ scene("hopital_chambre",()=>{
     ELIE.play("idle_behind")
  
 // mouvements
-    onKeyDown("right", () => {
+    function bouger_droite() {
         if(!velo_monte){
             ELIE.move(25, 0);
             if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
@@ -4774,331 +4518,223 @@ scene("hopital_chambre",()=>{
                 ELIE.velo_utilise.play("roule");
             }
         }
-    });
 
-    onKeyRelease("right", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("down", () => {
-        if(!velo_monte){
-            ELIE.move(0, 25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_front");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, 40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("down", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_front")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("up", () => {
-        if(!velo_monte){
-            ELIE.move(0, -25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_behind");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, -40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("up", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_behind")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("left", () => {
-        if(!velo_monte){
-            ELIE.move(-25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_side");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(-40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("left", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("d", () => {
-        if(!velo_monte){
-            ELIE.move(25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_side");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("d", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("s", () => {
-        if(!velo_monte){
-            ELIE.move(0, 25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_front");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, 40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("s", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_front")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("w", () => {
-        if(!velo_monte){
-            ELIE.move(0, -25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_behind");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, -40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("w", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_behind")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("a", () => {
-        if(!velo_monte){
-            ELIE.move(-25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_side");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(-40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("a", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-// coup de pied
-    onKeyPress("space", () => {
-        if(!near){
-            if(ELIE.curAnim() === "walk_side"){
-                ELIE.play("kick_side")
-            }
-            if(ELIE.curAnim() === "walk_front"){
-                ELIE.play("kick_front")
-            }
-            if(ELIE.curAnim() === "walk_behind"){
-                ELIE.play("kick_behind")
-            }
-        }
-
-        if(!nearball){
-            return
-        }
-
-        const dir = ballon_foot.pos.sub(ELIE.pos).unit()
-
-        const force = 100
-
-        ballon_foot.applyImpulse(dir.scale(force))
-
-        ballon_foot.play("bounce")
-
-        tuto_ballon = true    
-    })
-
-// sons de pas
-    pas.stop()
-
-    function isAnyMovementKeyDown() {
-        return isKeyDown("w") || isKeyDown("a") || isKeyDown("s") || isKeyDown("d") || isKeyDown("left") || isKeyDown("up") || isKeyDown("right") || isKeyDown("down");
-    }
-
-    onKeyDown("w", () => {
-        if(!bool_pas){
+        if(!bool_pas && !velo_monte){
             pas.play()
             bool_pas = true
         }
-    })
+    }
+    function bouger_stop_droite() {
+        if(!velo_monte){
+            ELIE.play("idle_side")
+        }
 
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_bas() {
+        if(!velo_monte){
+            ELIE.move(0, 25);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = false;
+                ELIE.play("walk_front");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(0, 40);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = false;
+                ELIE.velo_utilise.flipX = true;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
+        }
+    }
+    function bouger_stop_bas(){
+        if(!velo_monte){
+            ELIE.play("idle_front")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_haut(){
+        if(!velo_monte){
+            ELIE.move(0, -25);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = true;
+                ELIE.play("walk_behind");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(0, -40);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = true;
+                ELIE.velo_utilise.flipX = false;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
+        }
+    }
+    function bouger_stop_haut(){
+        if(!velo_monte){
+            ELIE.play("idle_behind")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_gauche(){
+        if(!velo_monte){
+            ELIE.move(-25, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = false;
+                ELIE.play("walk_side");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(-40, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = false;
+                ELIE.velo_utilise.flipX = true;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
+        }
+    }
+    function bouger_stop_gauche(){
+        if(!velo_monte){
+            ELIE.play("idle_side")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function coup_de_pied() {
+        onKeyPress("space", () => {
+            if(!near){
+                if(ELIE.curAnim() === "walk_side"){
+                    ELIE.play("kick_side")
+                }
+                if(ELIE.curAnim() === "walk_front"){
+                    ELIE.play("kick_front")
+                }
+                if(ELIE.curAnim() === "walk_behind"){
+                    ELIE.play("kick_behind")
+                }
+            }
+
+            if(!nearball){
+                return
+            }
+
+            const dir = ballon_foot.pos.sub(ELIE.pos).unit()
+
+            const force = 100
+
+            ballon_foot.vel = dir.scale(force)
+
+            const son_ballon = play("son_ballon", {
+                volume: 1
+            })
+
+            tuto_ballon = true   
+
+            ballon_foot.play("bounce")
+
+        })
+    }     
+
+    onKeyDown("right", () => {
+        bouger_droite()
+    });
+    onKeyRelease("right", ()=>{
+        bouger_stop_droite()
+    })
+    onKeyDown("down", () => {
+        bouger_bas()
+    });
+    onKeyRelease("down", ()=>{
+        bouger_stop_bas()
+    })
+    onKeyDown("up", () => {
+        bouger_haut()
+    });
+    onKeyRelease("up", ()=>{
+        bouger_stop_haut()
+    })
+    onKeyDown("left", () => {
+        bouger_gauche()
+    });
+    onKeyRelease("left", ()=>{
+        bouger_stop_gauche()
+    })
+    onKeyDown("d", () => {
+        bouger_droite()
+    });
+    onKeyRelease("d", ()=>{
+        bouger_stop_droite()
+    })
+    onKeyDown("s", () => {
+        bouger_bas()
+    });
+    onKeyRelease("s", ()=>{
+        bouger_stop_bas()
+    })
+    onKeyDown("w", () => {
+        bouger_haut()
+    });
+    onKeyRelease("w", ()=>{
+        bouger_stop_haut()
+    })
+    onKeyDown("a", () => {
+        bouger_gauche()
+    });
+    onKeyRelease("a", ()=>{
+        bouger_stop_gauche()
+    })
+    onKeyPress("space", () => {
+        coup_de_pied() 
+    });
+
+    // son de marche et position z
     ELIE.onUpdate(() => {
-        if (!isAnyMovementKeyDown()) {
+        ELIE.z = ELIE.pos.y
+
+        if (!isAnyMovementKeyDown() && !navigator.getGamepads()[0]) {
             pas.stop()
             bool_pas = false
         }
-    })
 
-    onKeyDown("a", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
+        if(ELIE.velo_utilise) {
+            ELIE.velo_utilise.pos.x = ELIE.pos.x
+            ELIE.velo_utilise.pos.y = ELIE.pos.y + 11
+            ELIE.velo_utilise.z = ELIE.pos.y + 11
+            ELIE.z = ELIE.pos.y + 11
         }
     })
-
-    onKeyDown("s", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("d", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("left", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("up", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("right", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("down", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    ELIE.onUpdate(() => {
-        ELIE.z = ELIE.pos.y
-    })
-
 
 // INTERACTION
     onKeyPress("e", () => {
@@ -5157,7 +4793,7 @@ scene("hopital_chambre",()=>{
 
     const mur_haut = add([
         rect(192, 1),
-        pos(0,25),
+        pos(0,27),
         area(),
         body({isStatic: true}),
         opacity(0)
@@ -5261,7 +4897,7 @@ scene("prison",()=>{
     ELIE.play("idle_behind")
  
 // mouvements
-    onKeyDown("right", () => {
+    function bouger_droite() {
         if(!velo_monte){
             ELIE.move(25, 0);
             if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
@@ -5279,331 +4915,223 @@ scene("prison",()=>{
                 ELIE.velo_utilise.play("roule");
             }
         }
-    });
 
-    onKeyRelease("right", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("down", () => {
-        if(!velo_monte){
-            ELIE.move(0, 25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_front");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, 40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("down", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_front")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("up", () => {
-        if(!velo_monte){
-            ELIE.move(0, -25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_behind");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, -40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("up", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_behind")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("left", () => {
-        if(!velo_monte){
-            ELIE.move(-25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_side");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(-40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("left", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("d", () => {
-        if(!velo_monte){
-            ELIE.move(25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_side");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("d", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("s", () => {
-        if(!velo_monte){
-            ELIE.move(0, 25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_front");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, 40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("s", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_front")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("w", () => {
-        if(!velo_monte){
-            ELIE.move(0, -25);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = true;
-                ELIE.play("walk_behind");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(0, -40);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = true;
-                ELIE.velo_utilise.flipX = false;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("w", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_behind")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-    onKeyDown("a", () => {
-        if(!velo_monte){
-            ELIE.move(-25, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
-                ELIE.flipX = false;
-                ELIE.play("walk_side");
-            }
-        }
-
-        if(velo_monte){
-            ELIE.move(-40, 0);
-            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
-                ELIE.flipX = false;
-                ELIE.velo_utilise.flipX = true;
-                ELIE.play("velo");
-                ELIE.velo_utilise.play("roule");
-            }
-        }
-    });
-
-    onKeyRelease("a", ()=>{
-        if(!velo_monte){
-            ELIE.play("idle_side")
-        }
-
-        if(velo_monte){
-            ELIE.velo_utilise.stop()
-        }
-    })
-
-// coup de pied
-    onKeyPress("space", () => {
-        if(!near){
-            if(ELIE.curAnim() === "walk_side"){
-                ELIE.play("kick_side")
-            }
-            if(ELIE.curAnim() === "walk_front"){
-                ELIE.play("kick_front")
-            }
-            if(ELIE.curAnim() === "walk_behind"){
-                ELIE.play("kick_behind")
-            }
-        }
-
-        if(!nearball){
-            return
-        }
-
-        const dir = ballon_foot.pos.sub(ELIE.pos).unit()
-
-        const force = 100
-
-        ballon_foot.applyImpulse(dir.scale(force))
-
-        ballon_foot.play("bounce")
-
-        tuto_ballon = true    
-    })
-
-// sons de pas
-    pas.stop()
-
-    function isAnyMovementKeyDown() {
-        return isKeyDown("w") || isKeyDown("a") || isKeyDown("s") || isKeyDown("d") || isKeyDown("left") || isKeyDown("up") || isKeyDown("right") || isKeyDown("down");
-    }
-
-    onKeyDown("w", () => {
-        if(!bool_pas){
+        if(!bool_pas && !velo_monte){
             pas.play()
             bool_pas = true
         }
-    })
+    }
+    function bouger_stop_droite() {
+        if(!velo_monte){
+            ELIE.play("idle_side")
+        }
 
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_bas() {
+        if(!velo_monte){
+            ELIE.move(0, 25);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = false;
+                ELIE.play("walk_front");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(0, 40);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = false;
+                ELIE.velo_utilise.flipX = true;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
+        }
+    }
+    function bouger_stop_bas(){
+        if(!velo_monte){
+            ELIE.play("idle_front")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_haut(){
+        if(!velo_monte){
+            ELIE.move(0, -25);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = true;
+                ELIE.play("walk_behind");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(0, -40);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = true;
+                ELIE.velo_utilise.flipX = false;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
+        }
+    }
+    function bouger_stop_haut(){
+        if(!velo_monte){
+            ELIE.play("idle_behind")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function bouger_gauche(){
+        if(!velo_monte){
+            ELIE.move(-25, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side"){
+                ELIE.flipX = false;
+                ELIE.play("walk_side");
+            }
+        }
+
+        if(velo_monte){
+            ELIE.move(-40, 0);
+            if(ELIE.curAnim() != "walk_side" && ELIE.curAnim() != "walk_front" && ELIE.curAnim() != "walk_behind" && ELIE.curAnim() != "kick_behind" && ELIE.curAnim() != "kick_front" && ELIE.curAnim() != "kick_side" && ELIE.velo_utilise.curAnim() != "roule"){
+                ELIE.flipX = false;
+                ELIE.velo_utilise.flipX = true;
+                ELIE.play("velo");
+                ELIE.velo_utilise.play("roule");
+            }
+        }
+
+        if(!bool_pas && !velo_monte){
+            pas.play()
+            bool_pas = true
+        }
+    }
+    function bouger_stop_gauche(){
+        if(!velo_monte){
+            ELIE.play("idle_side")
+        }
+
+        if(velo_monte){
+            ELIE.velo_utilise.stop()
+        }
+    }
+    function coup_de_pied() {
+        onKeyPress("space", () => {
+            if(!near){
+                if(ELIE.curAnim() === "walk_side"){
+                    ELIE.play("kick_side")
+                }
+                if(ELIE.curAnim() === "walk_front"){
+                    ELIE.play("kick_front")
+                }
+                if(ELIE.curAnim() === "walk_behind"){
+                    ELIE.play("kick_behind")
+                }
+            }
+
+            if(!nearball){
+                return
+            }
+
+            const dir = ballon_foot.pos.sub(ELIE.pos).unit()
+
+            const force = 100
+
+            ballon_foot.vel = dir.scale(force)
+
+            const son_ballon = play("son_ballon", {
+                volume: 1
+            })
+
+            tuto_ballon = true   
+
+            ballon_foot.play("bounce")
+
+        })
+    }     
+
+    onKeyDown("right", () => {
+        bouger_droite()
+    });
+    onKeyRelease("right", ()=>{
+        bouger_stop_droite()
+    })
+    onKeyDown("down", () => {
+        bouger_bas()
+    });
+    onKeyRelease("down", ()=>{
+        bouger_stop_bas()
+    })
+    onKeyDown("up", () => {
+        bouger_haut()
+    });
+    onKeyRelease("up", ()=>{
+        bouger_stop_haut()
+    })
+    onKeyDown("left", () => {
+        bouger_gauche()
+    });
+    onKeyRelease("left", ()=>{
+        bouger_stop_gauche()
+    })
+    onKeyDown("d", () => {
+        bouger_droite()
+    });
+    onKeyRelease("d", ()=>{
+        bouger_stop_droite()
+    })
+    onKeyDown("s", () => {
+        bouger_bas()
+    });
+    onKeyRelease("s", ()=>{
+        bouger_stop_bas()
+    })
+    onKeyDown("w", () => {
+        bouger_haut()
+    });
+    onKeyRelease("w", ()=>{
+        bouger_stop_haut()
+    })
+    onKeyDown("a", () => {
+        bouger_gauche()
+    });
+    onKeyRelease("a", ()=>{
+        bouger_stop_gauche()
+    })
+    onKeyPress("space", () => {
+        coup_de_pied() 
+    });
+
+    // son de marche et position z
     ELIE.onUpdate(() => {
-        if (!isAnyMovementKeyDown()) {
+        ELIE.z = ELIE.pos.y
+
+        if (!isAnyMovementKeyDown() && !navigator.getGamepads()[0]) {
             pas.stop()
             bool_pas = false
         }
-    })
 
-    onKeyDown("a", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
+        if(ELIE.velo_utilise) {
+            ELIE.velo_utilise.pos.x = ELIE.pos.x
+            ELIE.velo_utilise.pos.y = ELIE.pos.y + 11
+            ELIE.velo_utilise.z = ELIE.pos.y + 11
+            ELIE.z = ELIE.pos.y + 11
         }
     })
-
-    onKeyDown("s", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("d", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("left", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("up", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("right", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    onKeyDown("down", () => {
-        if(!bool_pas){
-            pas.play()
-            bool_pas = true
-        }
-    })
-
-    ELIE.onUpdate(() => {
-        ELIE.z = ELIE.pos.y
-    })
-
 
 // INTERACTION
     onKeyPress("e", () => {
