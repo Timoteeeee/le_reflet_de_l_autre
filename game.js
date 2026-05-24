@@ -147,6 +147,9 @@ loadSound('oiseau_son', 'sounds/oiseau_son.mp3');
 loadSound('son_defaite', 'sounds/son_defaite.mp3');
 loadSound('son_victoire', 'sounds/son_victoire.mp3');
 loadSound('son_ballon', 'sounds/son_ballon.mp3');
+loadSound('son_velo', 'sounds/velo.mp3');
+loadSound('son_velo_arret', 'sounds/velo_arret.mp3');
+loadSound('son_velo_casse', 'sounds/velo_casse.mp3');
 
 // load personnages
 loadSprite('elie_1', 'assets/elie_1.png',{
@@ -394,15 +397,26 @@ let velo_monte = false
 let tuto_inventaire = false
 let score_foot = [0, 0]
 let bool_pas = false
+let bool_velo = false
 const pas = play("bruit_pas", {
         volume: 0.15,
         loop: true
 })
 pas.stop()
+const son_velo = play("son_velo", {
+        volume: 1,
+        loop: true
+})
+son_velo.stop()
+const son_velo_casse = play("son_velo_casse", {
+        volume: 1,
+        loop: true
+})
+son_velo_casse.stop()
 const overlay = document.getElementById("overlay");
 const messageBox = document.getElementById("message");
 let tuto_deplacement = false
-let savoir_velo = false
+let savoir_velo = true
 let velo
 let animation_check = false
 let velo_location = "foret_1"
@@ -674,6 +688,7 @@ let quete_boule_fin = false
 let partie_foot = false
 let cadeau_1 = false
 let velo_garage = false
+let quete_velo_repare = false
 
 scene("accueil",()=>{
     add([
@@ -928,6 +943,14 @@ scene("foret_1",()=>{
             pas.play()
             bool_pas = true
         }
+        if(!bool_velo && velo_monte && !quete_velo_repare){
+            son_velo_casse.play()
+            bool_velo = true
+        }
+        if(!bool_velo && velo_monte && quete_velo_repare){
+            son_velo.play()
+            bool_velo = true
+        }
     }
     function bouger_stop_droite() {
         if(!velo_monte){
@@ -936,6 +959,12 @@ scene("foret_1",()=>{
 
         if(velo_monte){
             ELIE.velo_utilise.stop()
+                if (!isAnyMovementKeyDown()){
+                const son_velo_arret = play("son_velo_arret", {
+                        volume: 1,
+                        loop: false
+                })
+            }
         }
     }
     function bouger_bas() {
@@ -961,6 +990,14 @@ scene("foret_1",()=>{
             pas.play()
             bool_pas = true
         }
+        if(!bool_velo && velo_monte && !quete_velo_repare){
+            son_velo_casse.play()
+            bool_velo = true
+        }
+        if(!bool_velo && velo_monte && quete_velo_repare){
+            son_velo.play()
+            bool_velo = true
+        }
     }
     function bouger_stop_bas(){
         if(!velo_monte){
@@ -969,6 +1006,12 @@ scene("foret_1",()=>{
 
         if(velo_monte){
             ELIE.velo_utilise.stop()
+                if (!isAnyMovementKeyDown()){
+                const son_velo_arret = play("son_velo_arret", {
+                        volume: 1,
+                        loop: false
+                })
+            }
         }
     }
     function bouger_haut(){
@@ -994,6 +1037,14 @@ scene("foret_1",()=>{
             pas.play()
             bool_pas = true
         }
+        if(!bool_velo && velo_monte && !quete_velo_repare){
+            son_velo_casse.play()
+            bool_velo = true
+        }
+        if(!bool_velo && velo_monte && quete_velo_repare){
+            son_velo.play()
+            bool_velo = true
+        }
     }
     function bouger_stop_haut(){
         if(!velo_monte){
@@ -1002,6 +1053,12 @@ scene("foret_1",()=>{
 
         if(velo_monte){
             ELIE.velo_utilise.stop()
+                if (!isAnyMovementKeyDown()){
+                const son_velo_arret = play("son_velo_arret", {
+                        volume: 1,
+                        loop: false
+                })
+            }
         }
     }
     function bouger_gauche(){
@@ -1027,6 +1084,14 @@ scene("foret_1",()=>{
             pas.play()
             bool_pas = true
         }
+        if(!bool_velo && velo_monte && !quete_velo_repare){
+            son_velo_casse.play()
+            bool_velo = true
+        }
+        if(!bool_velo && velo_monte && quete_velo_repare){
+            son_velo.play()
+            bool_velo = true
+        }
     }
     function bouger_stop_gauche(){
         if(!velo_monte){
@@ -1035,6 +1100,12 @@ scene("foret_1",()=>{
 
         if(velo_monte){
             ELIE.velo_utilise.stop()
+                if (!isAnyMovementKeyDown()){
+                const son_velo_arret = play("son_velo_arret", {
+                        volume: 1,
+                        loop: false
+                })
+            }
         }
     }
     function coup_de_pied() {
@@ -1128,9 +1199,13 @@ scene("foret_1",()=>{
     ELIE.onUpdate(() => {
         ELIE.z = ELIE.pos.y
 
-        if (!isAnyMovementKeyDown() && !navigator.getGamepads()[0]) {
+        if (!isAnyMovementKeyDown()) {
             pas.stop()
+            son_velo.stop()
+            son_velo_casse.stop()
+
             bool_pas = false
+            bool_velo = false
         }
 
         if(velo_monte) {
@@ -1925,7 +2000,7 @@ scene("terrain_foot",()=>{
 
     score_foot[0] = 0
     score_foot[1] = 0
-    
+
 // INITIALISATION ET MOUVEMENTS ELIE
     const ELIE = add([
         sprite(apparence),
@@ -1962,6 +2037,8 @@ scene("terrain_foot",()=>{
         ])
         velo.flipX = true
         velo.z = velo.pos.y
+        son_velo.stop()
+        son_velo_casse.stop()
     }
 
 // mouvements
@@ -3144,6 +3221,14 @@ scene("ville_1",()=>{
             pas.play()
             bool_pas = true
         }
+        if(!bool_velo && velo_monte && !quete_velo_repare){
+            son_velo_casse.play()
+            bool_velo = true
+        }
+        if(!bool_velo && velo_monte && quete_velo_repare){
+            son_velo.play()
+            bool_velo = true
+        }
     }
     function bouger_stop_droite() {
         if(!velo_monte){
@@ -3152,6 +3237,12 @@ scene("ville_1",()=>{
 
         if(velo_monte){
             ELIE.velo_utilise.stop()
+                if (!isAnyMovementKeyDown()){
+                const son_velo_arret = play("son_velo_arret", {
+                        volume: 1,
+                        loop: false
+                })
+            }
         }
     }
     function bouger_bas() {
@@ -3177,6 +3268,14 @@ scene("ville_1",()=>{
             pas.play()
             bool_pas = true
         }
+        if(!bool_velo && velo_monte && !quete_velo_repare){
+            son_velo_casse.play()
+            bool_velo = true
+        }
+        if(!bool_velo && velo_monte && quete_velo_repare){
+            son_velo.play()
+            bool_velo = true
+        }
     }
     function bouger_stop_bas(){
         if(!velo_monte){
@@ -3185,6 +3284,12 @@ scene("ville_1",()=>{
 
         if(velo_monte){
             ELIE.velo_utilise.stop()
+                if (!isAnyMovementKeyDown()){
+                const son_velo_arret = play("son_velo_arret", {
+                        volume: 1,
+                        loop: false
+                })
+            }
         }
     }
     function bouger_haut(){
@@ -3210,6 +3315,14 @@ scene("ville_1",()=>{
             pas.play()
             bool_pas = true
         }
+        if(!bool_velo && velo_monte && !quete_velo_repare){
+            son_velo_casse.play()
+            bool_velo = true
+        }
+        if(!bool_velo && velo_monte && quete_velo_repare){
+            son_velo.play()
+            bool_velo = true
+        }
     }
     function bouger_stop_haut(){
         if(!velo_monte){
@@ -3218,6 +3331,12 @@ scene("ville_1",()=>{
 
         if(velo_monte){
             ELIE.velo_utilise.stop()
+                if (!isAnyMovementKeyDown()){
+                const son_velo_arret = play("son_velo_arret", {
+                        volume: 1,
+                        loop: false
+                })
+            }
         }
     }
     function bouger_gauche(){
@@ -3243,6 +3362,14 @@ scene("ville_1",()=>{
             pas.play()
             bool_pas = true
         }
+        if(!bool_velo && velo_monte && !quete_velo_repare){
+            son_velo_casse.play()
+            bool_velo = true
+        }
+        if(!bool_velo && velo_monte && quete_velo_repare){
+            son_velo.play()
+            bool_velo = true
+        }
     }
     function bouger_stop_gauche(){
         if(!velo_monte){
@@ -3251,6 +3378,12 @@ scene("ville_1",()=>{
 
         if(velo_monte){
             ELIE.velo_utilise.stop()
+                if (!isAnyMovementKeyDown()){
+                const son_velo_arret = play("son_velo_arret", {
+                        volume: 1,
+                        loop: false
+                })
+            }
         }
     }
     function coup_de_pied() {
@@ -3344,9 +3477,13 @@ scene("ville_1",()=>{
     ELIE.onUpdate(() => {
         ELIE.z = ELIE.pos.y
 
-        if (!isAnyMovementKeyDown() && !navigator.getGamepads()[0]) {
+        if (!isAnyMovementKeyDown()) {
             pas.stop()
+            son_velo.stop()
+            son_velo_casse.stop()
+
             bool_pas = false
+            bool_velo = false
         }
 
         if(velo_monte) {
@@ -3633,6 +3770,14 @@ scene("garage",()=>{
             pas.play()
             bool_pas = true
         }
+        if(!bool_velo && velo_monte && !quete_velo_repare){
+            son_velo_casse.play()
+            bool_velo = true
+        }
+        if(!bool_velo && velo_monte && quete_velo_repare){
+            son_velo.play()
+            bool_velo = true
+        }
     }
     function bouger_stop_droite() {
         if(!velo_monte){
@@ -3641,6 +3786,12 @@ scene("garage",()=>{
 
         if(velo_monte){
             ELIE.velo_utilise.stop()
+                if (!isAnyMovementKeyDown()){
+                const son_velo_arret = play("son_velo_arret", {
+                        volume: 1,
+                        loop: false
+                })
+            }
         }
     }
     function bouger_bas() {
@@ -3666,6 +3817,14 @@ scene("garage",()=>{
             pas.play()
             bool_pas = true
         }
+        if(!bool_velo && velo_monte && !quete_velo_repare){
+            son_velo_casse.play()
+            bool_velo = true
+        }
+        if(!bool_velo && velo_monte && quete_velo_repare){
+            son_velo.play()
+            bool_velo = true
+        }
     }
     function bouger_stop_bas(){
         if(!velo_monte){
@@ -3674,6 +3833,12 @@ scene("garage",()=>{
 
         if(velo_monte){
             ELIE.velo_utilise.stop()
+                if (!isAnyMovementKeyDown()){
+                const son_velo_arret = play("son_velo_arret", {
+                        volume: 1,
+                        loop: false
+                })
+            }
         }
     }
     function bouger_haut(){
@@ -3699,6 +3864,14 @@ scene("garage",()=>{
             pas.play()
             bool_pas = true
         }
+        if(!bool_velo && velo_monte && !quete_velo_repare){
+            son_velo_casse.play()
+            bool_velo = true
+        }
+        if(!bool_velo && velo_monte && quete_velo_repare){
+            son_velo.play()
+            bool_velo = true
+        }
     }
     function bouger_stop_haut(){
         if(!velo_monte){
@@ -3707,6 +3880,12 @@ scene("garage",()=>{
 
         if(velo_monte){
             ELIE.velo_utilise.stop()
+                if (!isAnyMovementKeyDown()){
+                const son_velo_arret = play("son_velo_arret", {
+                        volume: 1,
+                        loop: false
+                })
+            }
         }
     }
     function bouger_gauche(){
@@ -3732,6 +3911,14 @@ scene("garage",()=>{
             pas.play()
             bool_pas = true
         }
+        if(!bool_velo && velo_monte && !quete_velo_repare){
+            son_velo_casse.play()
+            bool_velo = true
+        }
+        if(!bool_velo && velo_monte && quete_velo_repare){
+            son_velo.play()
+            bool_velo = true
+        }
     }
     function bouger_stop_gauche(){
         if(!velo_monte){
@@ -3740,6 +3927,12 @@ scene("garage",()=>{
 
         if(velo_monte){
             ELIE.velo_utilise.stop()
+                if (!isAnyMovementKeyDown()){
+                const son_velo_arret = play("son_velo_arret", {
+                        volume: 1,
+                        loop: false
+                })
+            }
         }
     }
     function coup_de_pied() {
@@ -3833,9 +4026,13 @@ scene("garage",()=>{
     ELIE.onUpdate(() => {
         ELIE.z = ELIE.pos.y
 
-        if (!isAnyMovementKeyDown() && !navigator.getGamepads()[0]) {
+        if (!isAnyMovementKeyDown()) {
             pas.stop()
+            son_velo.stop()
+            son_velo_casse.stop()
+
             bool_pas = false
+            bool_velo = false
         }
 
         if(velo_monte) {
@@ -4032,6 +4229,7 @@ scene("garage",()=>{
 
             if (near && dialogueStage === 1 && currentSpeaker === PAPA && velo_location === "garage" && compteur_garage > 5) {
                 ftc_text_near(ELIE, `Merci ! J'ai regardé ton vélo en attendant.`, currentSpeaker, currentTag)
+                quete_velo_repare = true
                 dialogueStage = 2
                 return
             }
