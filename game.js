@@ -142,7 +142,8 @@ loadSprite('hopital_meuble', 'assets/hopital_meuble.png');
 
 // load sounds
 loadSound('bruit_pas', 'sounds/bruits_pas.mp3');
-loadSound('musique_1', 'sounds/game_music_project.mp3');
+loadSound('musique_jeu', 'sounds/musique_trompette_jeu_final.mp3');
+loadSound('musique_foot', 'sounds/musique_foot.mp3');
 loadSound('oiseau_son', 'sounds/oiseau_son.mp3');
 loadSound('son_defaite', 'sounds/son_defaite.mp3');
 loadSound('son_victoire', 'sounds/son_victoire.mp3');
@@ -380,6 +381,7 @@ loadSprite('oscar', 'assets/oscar.png', {
 });
 
 // variables
+let fin = false
 let jeu_lance = false
 let apparence = "elie_1"
 let pseudo = ""
@@ -422,6 +424,16 @@ const son_ballon = play("son_ballon", {
     volume: 1
 })
 son_ballon.stop()
+const musique_jeu = play("musique_jeu", {
+    volume: 0.7,
+    loop: true
+})
+const musique_foot = play("musique_foot", {
+    volume: 0.4,
+    loop: true
+})
+musique_jeu.stop()
+musique_foot.stop()
 const overlay = document.getElementById("overlay");
 const messageBox = document.getElementById("message");
 let tuto_deplacement = false
@@ -433,6 +445,8 @@ let promptCallback = null
 let fadeTimeout;
 let hideTimeout;
 let partie_foot_faite = false
+let currentMessages_inv_1 = null
+let currentMessages_inv_2 = null
 
 // garage
 let cle_compteur = false
@@ -505,6 +519,14 @@ function removeItemBySprite(spritePath, objet){
 }
 
 function texte_inventaire(texte){
+    // supprime ancien texte éventuel
+    if (currentMessages_inv_1) {
+        destroy(currentMessages_inv_1)
+    }
+
+    if (currentMessages_inv_2) {
+        destroy(currentMessages_inv_2)
+    }
     const message_inventaire_1 = add([text(texte, {
         font: "journal"
     }),
@@ -523,6 +545,8 @@ function texte_inventaire(texte){
     opacity(1)
     ]);
     message_inventaire_2.z = 500
+    currentMessages_inv_1 = message_inventaire_1
+    currentMessages_inv_2 = message_inventaire_2
     wait(2, () => {
         let elapsed = 0;
         const fadeDuration = 1.5;
@@ -537,11 +561,37 @@ function texte_inventaire(texte){
                 destroy(message_inventaire_1);
                 destroy(message_inventaire_2);
             }
+
+            if (currentMessages_inv_1 === message_inventaire_1) {
+                currentMessages_inv_1 = null
+            }
+
+            if (currentMessages_inv_2 === message_inventaire_2) {
+                currentMessages_inv_2 = null
+            }
         });
     });
 }
 
 // INITIALISATION FONCTIONS
+// arreter musique
+function fadeOutMusic(music, duration) {
+
+    const startVolume = music.volume
+
+    tween(
+        startVolume,
+        0,
+        duration,
+        (v) => {
+            music.volume = v
+        }
+    )
+
+    wait(duration, () => {
+        music.stop()
+    })
+}
 // son marcher
 function playFootsteps() {
     if (!bool_pas) {
@@ -765,6 +815,7 @@ scene("accueil",()=>{
             jeu_lance = true
             destroy(message1)
             destroy(message2)
+            musique_jeu.play()
             message("Un jeu de Timoté Sarrasin", 1)
             wait(7, () => {
                 message("Imaginé par Timoté Sarrasin", 1)
@@ -776,6 +827,7 @@ scene("accueil",()=>{
                             message("Timoté Sarrasin présente", 1)
                             wait(7, () => {
                                 message("LE REFLET DE L'AUTRE", 0.8)
+                                fadeOutMusic(musique_jeu, 10)
                                 wait(10, () => {
                                     go("choix")
                                 })
@@ -792,7 +844,6 @@ scene("choix",()=>{
     add([
         sprite('accueil'),
     ]);
-
     // fond noir
     const fond = add([
         rect(width(), height()),
@@ -2554,7 +2605,7 @@ scene("partie_foot",()=>{
     add([
         sprite('terrain_foot'),
     ]);
-
+    musique_foot.play()
     zone_arrivee = "partie"
     partie_foot_faite = true
 // INITIALISATION VARIABLE SPECIFIQUE
@@ -3104,12 +3155,13 @@ scene("partie_foot",()=>{
         if(!var_goal){
             confettis_gauche.play("confettis")
             play("son_defaite", {
-                volume: 0.3
+                volume: 0.5
             })
             score_foot[1] = score_foot[1] + 1
             var_goal = true
             if(score_foot[1] === 3){
-                message("Défaite...",2)
+                message("Défaite...",5)
+                fadeOutMusic(musique_foot, 3)
                 wait(3.5, () => {
                     go("terrain_foot")
                 })
@@ -3126,12 +3178,13 @@ scene("partie_foot",()=>{
         if(!var_goal){
             confettis_droite.play("confettis")
             play("son_victoire", {
-                volume: 0.3
+                volume: 0.5
             })
             score_foot[0] = score_foot[0] + 1
             var_goal = true
             if(score_foot[0] === 3){
-                message("Victoire !!!",2)
+                message("Victoire !!!",5)
+                fadeOutMusic(musique_foot, 3)
                 wait(3.5, () => {
                     go("terrain_foot")
                 })
@@ -3207,6 +3260,11 @@ scene("ville_1",()=>{
     if(zone_arrivee === "hopital"){
         ELIE.pos.x = 120
         ELIE.pos.y = 46
+    }
+
+    if(zone_arrivee === "ecole"){
+        ELIE.pos.x = 150
+        ELIE.pos.y = 111
     }
 
     ELIE.play("idle_side")
@@ -5689,15 +5747,43 @@ scene("ecole",()=>{
         sprite('accueil'),
     ]);
 
+    onKeyPress("space", () => {
+        if(fin){
+            zone_arrivee = "ecole"
+            go("ville_1")
+        } else {return}
+    }) 
+
+    musique_jeu.play({
+        volume: 0.7
+    })
+
     message("Vous avez terminé la démo", 1)
     wait(7, () => {
         message("Merci d'avoir joué !", 1)
         wait(7, () => {
             message("C'est très long de coder un jeu", 1)
             wait(7, () => {
+                fadeOutMusic(musique_jeu, 7)
                 message("Mais je fais la suite au plus vite", 1)
                 wait(7, () => {
-                    message("À bientôt !", 1)
+                    fin = true
+                    const message1 = add([text("Appuyer sur 'ESPACE' pour explorer", {
+                        font: "journal"
+                        }),
+                        pos(center()),
+                        anchor("center"),
+                        color(BLACK),
+                        scale(0.15),
+                    ])
+                    const message2 = add([text("Appuyer sur 'ESPACE' pour explorer", {
+                        font: "journal"
+                        }),
+                        pos(message1.pos.x + 0.5, message1.pos.y - 0.5),
+                        anchor("center"),
+                        color(WHITE),
+                        scale(0.15),
+                    ])
                 })
             })
         })
