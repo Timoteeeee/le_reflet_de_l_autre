@@ -425,11 +425,11 @@ const son_ballon = play("son_ballon", {
 })
 son_ballon.stop()
 const musique_jeu = play("musique_jeu", {
-    volume: 0.7,
+    volume: 0.75,
     loop: true
 })
 const musique_foot = play("musique_foot", {
-    volume: 0.4,
+    volume: 0.3,
     loop: true
 })
 musique_jeu.stop()
@@ -437,7 +437,7 @@ musique_foot.stop()
 const overlay = document.getElementById("overlay");
 const messageBox = document.getElementById("message");
 let tuto_deplacement = false
-let savoir_velo = true
+let savoir_velo = false
 let velo
 let animation_check = false
 let velo_location = "foret_1"
@@ -2605,7 +2605,9 @@ scene("partie_foot",()=>{
     add([
         sprite('terrain_foot'),
     ]);
+    musique_foot.volume = 0.3
     musique_foot.play()
+
     zone_arrivee = "partie"
     partie_foot_faite = true
 // INITIALISATION VARIABLE SPECIFIQUE
@@ -5754,9 +5756,8 @@ scene("ecole",()=>{
         } else {return}
     }) 
 
-    musique_jeu.play({
-        volume: 0.7
-    })
+    musique_jeu.volume = 0.8
+    musique_jeu.play()
 
     message("Vous avez terminé la démo", 1)
     wait(7, () => {
@@ -5790,5 +5791,4 @@ scene("ecole",()=>{
     })
 })
 
-
-go("choix")
+go("accueil")
