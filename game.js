@@ -151,6 +151,8 @@ loadSound('son_ballon', 'sounds/son_ballon.mp3');
 loadSound('son_velo', 'sounds/velo.mp3');
 loadSound('son_velo_arret', 'sounds/velo_arret.mp3');
 loadSound('son_velo_casse', 'sounds/velo_casse.mp3');
+loadSound('son_menu', 'sounds/son_menu.mp3');
+loadSound('son_clavier', 'sounds/son_clavier.mp3');
 
 // load personnages
 loadSprite('elie_1', 'assets/elie_1.png',{
@@ -400,6 +402,8 @@ let tuto_inventaire = false
 let score_foot = [0, 0]
 let bool_pas = false
 let bool_velo = false
+let typing = false
+let stopLoop = null
 const pas = play("bruit_pas", {
         volume: 0.15,
         loop: true
@@ -434,6 +438,16 @@ const musique_foot = play("musique_foot", {
 })
 musique_jeu.stop()
 musique_foot.stop()
+const son_menu = play("son_menu", {
+    volume: 0.4,
+    loop: false
+})
+son_menu.stop()
+const son_clavier = play("son_clavier", {
+    volume: 0.5,
+    loop: true
+})
+son_clavier.stop()
 const overlay = document.getElementById("overlay");
 const messageBox = document.getElementById("message");
 let tuto_deplacement = false
@@ -754,20 +768,34 @@ function ftc_text_near(player, msg, speaker, tag) {
 
 // animation texte dialogue
     if(msg != "\\[E\\] intéragir" && msg != "\\[ESPACE\\] en poussant pour tirer" && msg != "\\[E\\] prendre" && msg != "\\[E\\] entrer") {
-        const stopLoop = loop(0.03, () => {
+        typing = true
+
+        son_clavier.play()
+
+        if(stopLoop) {
+            stopLoop.cancel()
+            stopLoop = null
+        }
+            
+        stopLoop = loop(0.03, () => {
             if (index < msg.length) {
-                onKeyPress('space', () => {
-                    currentText = msg;
-                    message1.text = msg;
-                    message2.text = msg;
-                    index = msg.length;
-                    return
+                onKeyPress('e', () => {
+                    if(typing){
+                        currentText = msg;
+                        message1.text = msg;
+                        message2.text = msg;
+                        index = msg.length;                     
+                    }
                 })
                 currentText += msg[index];
                 message1.text = currentText;
                 message2.text = currentText;
                 index++;
             } else {
+                son_clavier.stop()
+                typing = false
+                stopLoop.cancel()
+                stopLoop = null
                 return
             }
         })
@@ -938,6 +966,7 @@ scene("choix",()=>{
 
     // choisir
     onKeyPress("a", () => {
+        son_menu.play()
         skin_fille.scaleTo(2.3)
         skin_garcon.scaleTo(1.8)
         skin_garcon.opacity = 0.5
@@ -946,6 +975,7 @@ scene("choix",()=>{
     })
 
     onKeyPress("d", () => {
+        son_menu.play()
         skin_fille.scaleTo(1.8)
         skin_garcon.scaleTo(2.3)
         skin_fille.opacity = 0.5
@@ -954,6 +984,7 @@ scene("choix",()=>{
     })
 
     onKeyPress("e", () => {
+        son_menu.play()
         if(apparence != ""){
             go("foret_1")
         }
@@ -1390,6 +1421,10 @@ scene("foret_1",()=>{
 
     onKeyPress("e", () => {
         // à pied
+        if(typing){return}
+        if(near){
+            son_menu.play()
+        }
         if(!velo_monte){
             // prendre boules
             if (near && dialogueStage === 1 && currentSpeaker === boules_de_jonglage) {
@@ -2503,6 +2538,10 @@ scene("terrain_foot",()=>{
 
     onKeyPress("e", () => {
     // dialogues oscar
+        if(typing){return}
+        if(near){
+            son_menu.play()
+        }   
         if (near && dialogueStage === 1 && currentSpeaker === OSCAR && !quete_boule_2 && !partie_foot) {
             let num = getRandomInt(3) 
             if (num === 0) {
@@ -3574,6 +3613,10 @@ scene("ville_1",()=>{
 
 // INTERACTION
     onKeyPress("e", () => {
+        if(typing){return}
+        if(near){
+            son_menu.play()
+        }
         if(!velo_monte){
             //monter sur le velo
             if (near && dialogueStage === 1 && currentSpeaker === velo && !savoir_velo) {
@@ -4111,6 +4154,10 @@ scene("garage",()=>{
 
 // INTERACTION
     onKeyPress("e", () => {
+        if(typing){return}
+        if(near){
+            son_menu.play()
+        }
         if(!velo_monte){
             // prendre outils
             if (near && dialogueStage === 1 && currentSpeaker === marteau) {
@@ -4894,6 +4941,10 @@ scene("hopital",()=>{
 
 // INTERACTION
     onKeyPress("e", () => {
+        if(typing){return}
+        if(near){
+            son_menu.play()
+        }
         if (near && dialogueStage === 1 && currentSpeaker === zone_2) {
             destroyCurrentMessages()
             near = false
@@ -5791,4 +5842,4 @@ scene("ecole",()=>{
     })
 })
 
-go("accueil")
+go("choix")
