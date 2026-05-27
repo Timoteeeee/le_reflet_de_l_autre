@@ -67,6 +67,9 @@ loadSprite('fleur_bleue', 'assets/fleur_bleue.png',{
     }
 });
 
+// load jouets
+loadSprite('jouet_chevalier', 'assets/jouet_chevalier.png');
+
 // load decors terrain de foot
 loadSprite('barriere_foot_gauche', 'assets/barriere_foot_gauche.png');
 loadSprite('barriere_foot_droite', 'assets/barriere_foot_droite.png');
@@ -439,12 +442,12 @@ const musique_foot = play("musique_foot", {
 musique_jeu.stop()
 musique_foot.stop()
 const son_menu = play("son_menu", {
-    volume: 0.4,
+    volume: 0.25,
     loop: false
 })
 son_menu.stop()
 const son_clavier = play("son_clavier", {
-    volume: 0.5,
+    volume: 0.6,
     loop: true
 })
 son_clavier.stop()
@@ -681,6 +684,8 @@ function message(texte, vitesse = 1) {
     // annule anciennes animations
     clearTimeout(fadeTimeout);
     clearTimeout(hideTimeout);
+    document.getElementById("message").style.display = "block";
+    document.getElementById("gainBox").style.display = "none"
 
     // reset
     overlay.style.transition = "none";
@@ -802,6 +807,47 @@ function ftc_text_near(player, msg, speaker, tag) {
         
 
     }
+}
+
+// afficher jouet gagné
+function jouetGagne(imagePath, vitesse = 1) {
+    document.getElementById("message").style.display = "none";
+    wait(2,()=>{
+        play("son_victoire", {
+            volume: 0.7
+        })
+    })
+    const overlay = document.getElementById("overlay");
+    const gainBox = document.getElementById("gainBox");
+    const gainImage = document.getElementById("gainImage");
+
+    gainBox.style.display = "flex";
+
+    gainImage.src = imagePath;
+
+    overlay.style.display = "flex";
+
+    requestAnimationFrame(() => {
+        overlay.style.opacity = "1";
+    });
+
+    gainBox.animate([
+        { transform: "scale(0)" },
+        { transform: "scale(1)" }
+    ], {
+        duration: 400 / vitesse,
+        easing: "cubic-bezier(.34,1.56,.64,1)"
+    });
+
+    setTimeout(() => {
+
+        overlay.style.opacity = "0";
+
+        setTimeout(() => {
+            overlay.style.display = "none";
+        }, 300);
+
+    }, 3000 / vitesse);
 }
 
 // initialisation quetes
@@ -1551,6 +1597,10 @@ scene("foret_1",()=>{
                 ftc_text_near(ELIE, "Je tiens mes promesses, tiens.", currentSpeaker, currentTag)
                 cadeau_1 = true
                 dialogueStage = 3
+                wait(2, ()=>{
+                    jouetGagne("assets/jouet_chevalier.png")
+                })
+                addItem("assets/jouet_chevalier.png", "'jouet de chevalier'")
                 return
             }
             if (near && dialogueStage === 3 && currentSpeaker === MELO && partie_foot_faite && cadeau_1) {
@@ -3195,6 +3245,7 @@ scene("partie_foot",()=>{
         ballon_foot.vel.x = -ballon_foot.vel.x/5
         if(!var_goal){
             confettis_gauche.play("confettis")
+            musique_foot.stop()
             play("son_defaite", {
                 volume: 0.5
             })
@@ -3218,6 +3269,7 @@ scene("partie_foot",()=>{
         ballon_foot.vel.x = -ballon_foot.vel.x/5
         if(!var_goal){
             confettis_droite.play("confettis")
+            musique_foot.stop()
             play("son_victoire", {
                 volume: 0.5
             })
@@ -5802,6 +5854,7 @@ scene("ecole",()=>{
 
     onKeyPress("space", () => {
         if(fin){
+            musique_jeu.stop()
             zone_arrivee = "ecole"
             go("ville_1")
         } else {return}
@@ -5816,7 +5869,6 @@ scene("ecole",()=>{
         wait(7, () => {
             message("C'est très long de coder un jeu", 1)
             wait(7, () => {
-                fadeOutMusic(musique_jeu, 7)
                 message("Mais je fais la suite au plus vite", 1)
                 wait(7, () => {
                     fin = true
@@ -5842,4 +5894,12 @@ scene("ecole",()=>{
     })
 })
 
-go("choix")
+scene("test",()=>{
+    add([
+        sprite("foret_1")
+    ])
+
+    jouetGagne("assets/jouet_chevalier.png")
+})
+
+go("accueil")
