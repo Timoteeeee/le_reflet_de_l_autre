@@ -812,7 +812,7 @@ function ftc_text_near(player, msg, speaker, tag) {
 // afficher jouet gagné
 function jouetGagne(imagePath, vitesse = 1) {
     document.getElementById("message").style.display = "none";
-    wait(2,()=>{
+    wait(0.5,()=>{
         play("son_victoire", {
             volume: 0.7
         })
@@ -1597,7 +1597,7 @@ scene("foret_1",()=>{
                 ftc_text_near(ELIE, "Je tiens mes promesses, tiens.", currentSpeaker, currentTag)
                 cadeau_1 = true
                 dialogueStage = 3
-                wait(2, ()=>{
+                wait(1.5, ()=>{
                     jouetGagne("assets/jouet_chevalier.png")
                 })
                 addItem("assets/jouet_chevalier.png", "'jouet de chevalier'")
