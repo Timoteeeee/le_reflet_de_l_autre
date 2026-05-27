@@ -3,7 +3,7 @@ Le Reflet de l'Autre est un jeu 2D inspiré de Stardew Valley et d'Omori dans le
 
 Screenshot
 <div align="center">
-  <img src="screenshot.png" width="700" alt="Screenshot du jeu">
+  <img src="assets/screenshot.png" width="700" alt="Screenshot du jeu">
 </div>
 
 Comment lancer le jeu
