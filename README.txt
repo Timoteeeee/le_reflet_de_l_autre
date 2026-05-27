@@ -1,5 +1,5 @@
 Le Reflet de l'Autre est un jeu 2D inspiré de Stardew Valley et d'Omori dans le style graphique et dans la narration. C'est un projet qui me tient à coeur, ce qui a été une source de motivation mais aussi un obstacle, car le projet se veut ambitieux et je n'ai pas eu le temps de créer une histoire complète comme je l'aurais souhaité. Je considère donc que cette version est une démo du jeu que je terminerai plus tard pour moi-même et mes proches. On peut dialoguer avec quatre pnj, jouer au foot et récupérer des objets.
-
+![screenshot](screenshot.png)
 Le jeu est jouable sur Itch.io dans le navigateur, à cette adresse : https://timolol78.itch.io/le-reflet-de-lautre-dmo
 Le jeu ne nécessite pas de module, de librairie ou de script intégré pour fonctionner, il suffit d'un navigateur internet.
 J'ai créé tous les assets et tous les sons du jeu. J'ai emprunté la police d'écriture à DaFont.com : https://www.dafont.com/fr/oldnewspapertypes.font
