@@ -1597,7 +1597,7 @@ scene("foret_1",()=>{
                 ftc_text_near(ELIE, "Je tiens mes promesses, tiens.", currentSpeaker, currentTag)
                 cadeau_1 = true
                 dialogueStage = 3
-                wait(1.5, ()=>{
+                wait(1, ()=>{
                     jouetGagne("assets/jouet_chevalier.png")
                 })
                 addItem("assets/jouet_chevalier.png", "'jouet de chevalier'")
@@ -5892,14 +5892,6 @@ scene("ecole",()=>{
             })
         })
     })
-})
-
-scene("test",()=>{
-    add([
-        sprite("foret_1")
-    ])
-
-    jouetGagne("assets/jouet_chevalier.png")
 })
 
 go("accueil")
