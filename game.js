@@ -1602,19 +1602,19 @@ scene("foret_1",()=>{
                 })
                 addItem("assets/jouet_chevalier.png", "'jouet de chevalier'")
                 return
-            }
-            if (near && dialogueStage === 3 && currentSpeaker === MELO && partie_foot_faite && cadeau_1) {
+            }          
+            if (near && dialogueStage === 1 && currentSpeaker === MELO && partie_foot_faite && cadeau_1) {
                 ftc_text_near(ELIE, "Ah, au fait. Mon vélo fait un bruit bizarre.", currentSpeaker, currentTag)
-                dialogueStage = 4
+                dialogueStage = 2
                 return
             }
-            if (near && dialogueStage === 4 && currentSpeaker === MELO && partie_foot_faite && cadeau_1) {
+            if (near && dialogueStage === 2 && currentSpeaker === MELO && partie_foot_faite && cadeau_1) {
                 ftc_text_near(ELIE, "Ton père est mécano c'est ça ?\nTu peux aller lui montrer ma bécane ?", currentSpeaker, currentTag)
                 savoir_velo = true
-                dialogueStage = 5
+                dialogueStage = 3
                 return
             }
-            if (near && dialogueStage === 5 && currentSpeaker === MELO && partie_foot_faite && cadeau_1) {
+            if (near && dialogueStage === 3 && currentSpeaker === MELO && partie_foot_faite && cadeau_1) {
                 ftc_text_near(ELIE, "\\[E\\] intéragir", MELO, "melo")
                 dialogueStage = 1
             }
